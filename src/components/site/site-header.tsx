@@ -15,7 +15,7 @@ import {
 import { cn } from '@/lib/utils'
 
 const segments = [
-  { name: 'School', href: '/school', desc: 'Class 1–10' },
+  { name: 'School', href: '/school', desc: 'Class 6–10' },
   { name: 'Senior', href: '/senior', desc: 'Class 11–12 + NEET/JEE' },
   { name: 'Coaching', href: '/coaching', desc: 'SSC, RRB, Police...' },
   { name: 'College', href: '/college', desc: 'Degree + Placement' },
@@ -23,6 +23,7 @@ const segments = [
   { name: 'Skills', href: '/skills', desc: 'Coding, Excel...' },
   { name: 'GK', href: '/gk', desc: 'Current Affairs' },
   { name: 'Atlas', href: '/atlas', desc: 'Books Solutions' },
+  { name: 'Concepts', href: '/concepts', desc: 'Browse all concepts' },
 ]
 
 export function SiteHeader() {

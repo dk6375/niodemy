@@ -1,7 +1,7 @@
 # SnapZila Academy — Master Development Plan
 
-> **Document Version:** 1.1  
-> **Last Updated:** Session 0 (Planning Phase) — v1.1 adds Senior (Class 11–12) segment + Hybrid-Merge combined course  
+> **Document Version:** 1.2  
+> **Last Updated:** Session 1 — v1.2 fixes School range (6–10), combined course optionality, GK content-first, Atlas multi-segment, domain → niodemy  
 > **Status:** FINAL — Ready for development  
 > **Purpose:** Any AI engineer or developer should be able to read this single document and build the entire platform from scratch.
 
@@ -169,20 +169,36 @@ A unified learning ecosystem where:
 
 | Segment | Route | Audience | Content Style | Combined Course Mode |
 |---|---|---|---|---|
-| **School** | `/school` | Class 1–10 students | Chapter-based, board-specific | Depth-merge |
-| **Senior** | `/senior` | Class 11–12 students (+ NEET/JEE/CUET) | Board + entrance integrated | Hybrid-merge |
-| **Coaching** | `/coaching` | After 12th competitive exam aspirants | Concept + MCQ + PYQ + Mock (drill-based) | Syllabus-merge |
-| **College** | `/college` | Degree students | Semester + subject + placement | Per-semester path |
-| **ITI** | `/iti` | ITI trade students | Trade + workshop + practical | Trade-based path |
-| **Skills** | `/skills` | Anyone, anytime | Project-based, W3Schools tutorials | Skill track / roadmap |
-| **GK** | `/gk` | Everyone | Daily feed + quiz | Exam-centric personalization |
-| **Atlas** | `/atlas` | Reference seekers | Book chapter-wise solutions | None (reference only) |
+| **School** | `/school` | Class 6–10 students | Chapter-based, board-specific | Optional depth-merge (foundation) + syllabus-merge (scholarship) |
+| **Senior** | `/senior` | Class 11–12 students (+ NEET/JEE/CUET) | Board + entrance integrated | Optional hybrid-merge |
+| **Coaching** | `/coaching` | After 12th competitive exam aspirants | Concept + MCQ + PYQ + Mock (drill-based) | Optional syllabus-merge (multi-exam) |
+| **College** | `/college` | Degree students | Semester + subject + placement | None |
+| **ITI** | `/iti` | ITI trade students | Trade + workshop + practical | None |
+| **Skills** | `/skills` | Anyone, anytime | Project-based, W3Schools tutorials | None (skill tracks only) |
+| **GK** | `/gk` | Everyone | Content-first (articles), then MCQ/Quiz/QNA/MockTest on demand | Exam-centric personalization |
+| **Atlas** | `/atlas` | Reference seekers (all segments) | Book chapter-wise solutions for school/senior/college/ITI | None (reference only) |
 
 Plus:
 - **`/my`** — Learner dashboard (personalized, login required)
 - **`/console`** — Admin & teacher dashboard (role-gated)
 
-### 3.3 Three Access Tiers
+### 3.3 Combined Course Applicability (Important)
+
+Combined course is the killer feature, but NOT every segment needs it. Here's the clear rule:
+
+| Segment | Combined Course? | Mode | Why / Why Not |
+|---|---|---|---|
+| **School** | ✅ OPTIONAL | Depth-merge (foundation) + Syllabus-merge (scholarship) | Class 6–10 + NEET Foundation + NTSE share ~same syllabus |
+| **Senior** | ✅ OPTIONAL | Hybrid-merge (board + entrance) | Class 11–12 board + NEET/JEE share ~same NCERT |
+| **Coaching** | ✅ OPTIONAL | Syllabus-merge (multi-exam) | RRB + SSC + Police — different syllabi, dedupe common |
+| **GK** | ✅ Exam-centric personalization | (not "combined course" but personalized per exam) | Same GK, different depth per exam level |
+| **College** | ❌ NO | Per-semester path only | Each degree/semester is distinct; no overlap to merge |
+| **ITI** | ❌ NO | Trade-based path only | Each trade is distinct; no overlap to merge |
+| **Skills** | ❌ NO | Skill tracks / roadmaps only | Each skill is independent; no overlap to merge |
+
+**Rule:** If a segment's goals share significant syllabus overlap (like School foundation/scholarship, Senior board/entrance, Coaching multi-exam), combined course applies. If goals are disjoint (College semesters, ITI trades, individual skills), no combined course.
+
+### 3.4 Three Access Tiers
 
 | Tier | Login? | What you can do |
 |---|---|---|
@@ -200,7 +216,7 @@ Plus:
 
 | Segment | Name | Route | Notes |
 |---|---|---|---|
-| Class 1–10 | **School** | `/school` | Simple, clear |
+| Class 6–10 | **School** | `/school` | Class 1–5 excluded (needs kids gamification — separate future product) |
 | Class 11–12 (+ NEET/JEE/CUET) | **Senior** | `/senior` | Higher secondary; board + entrance integrated |
 | Competitive coaching (after 12th) | **Coaching** | `/coaching` | Simple. NOT "Academy" (avoids confusion with brand) |
 | College/University | **College** | `/college` | Simple |
@@ -263,33 +279,53 @@ Plus:
 
 ### 4.3 Domain
 
-- **Current:** Vercel free subdomain (e.g., `snapzila-academy.vercel.app`)
+- **Current:** Vercel free subdomain → `niodemy.vercel.app` (brand: Niodemy)
 - **Future:** Custom domain (TBD by user)
+
+**Brand color consistency:** Emerald accent (defined in `globals.css` as `--primary: oklch(0.55 0.15 160)`). This SAME color must be used across the ENTIRE platform — all segments, console, dashboard, components. Never introduce a different brand color. Reuse `bg-primary`, `text-primary`, `border-primary` Tailwind classes everywhere.
 
 ---
 
 ## 5. Segments Deep-Dive
 
-### 5.1 School (Class 1–10)
+### 5.1 School (Class 6–10)
 
-**Audience:** Class 1–10 students across boards (CBSE, ICSE, State boards like MP Board).
+**Audience:** Class 6–10 students across boards (CBSE, ICSE, State boards like MP Board).
+
+**Note on Class 1–5:** Class 1–5 is intentionally excluded from this platform. Young children (ages 6–10) need kids-friendly gamification, animations, voice-led interactions, and a completely different UX paradigm. That is a separate future product, not part of Niodemy.
 
 **Content Model:**
-- Organized by: Board → Class → Subject → Chapter → Concept → Lesson
+- Organized by: Board → Class (6–10) → Subject → Chapter → Concept → Lesson
 - Each class has its own complete curriculum design (user's specific requirement: "हर class के लिए पूरा system design")
 - Board-specific content (CBSE Class 8 Science ≠ MP Board Class 8 Science in structure, though concepts overlap)
 
-**Goals a student can have:**
-- School exam prep (board-specific)
-- Olympiad (NSO, IMO, etc.)
-- Scholarship (NTSE, NMMS, etc.)
-- Foundation (early NEET/JEE prep — NCERT taught deeper, NOT Class 11 content)
+**Goals a student can have (combined course is OPTIONAL):**
+- **Basic school study only** — just Class 6–10 board curriculum (no combined course)
+- **+ NEET/JEE Foundation** — NCERT taught deeper (depth-merge)
+- **+ Scholarship** (NTSE, NMMS, KVPY, Olympiads) — scholarship syllabus ≈ class syllabus (syllabus-merge)
+- **+ Any combination** — e.g., Class 8 CBSE + NEET Foundation + NTSE
 
-**Combined Course Mode: Depth-Merge**
-- Student: Class 8 CBSE + Class 8 NEET Foundation
-- Both goals map to SAME class (Class 8), SAME concept set, different depths
-- Combined path: same concepts, depth = max(school_depth, foundation_depth)
-- Allen Kota model: NCERT taught deeper, not advanced content
+**Combined Course Mode (Optional):**
+- **Depth-merge** for foundation goals (same NCERT, deeper depth)
+- **Syllabus-merge** for scholarship goals (scholarship syllabus ≈ class syllabus, dedupe common concepts)
+- Both can combine: Class 8 CBSE + NEET Foundation + NTSE → one optimized path
+- User can choose to NOT use combined course — just browse class content sequentially
+
+**Example:**
+```
+Student: Class 8 CBSE + NEET Foundation + NTSE Scholarship
+
+All three map to ~same Class 8 concept set:
+  - CBSE Class 8 Science: 40 concepts at depth L2
+  - NEET Foundation Class 8: same 40 concepts at depth L3 (+ 5 bridging concepts)
+  - NTSE Class 8: same 40 concepts at depth L2 (+ 10 aptitude concepts)
+
+Combined course:
+  - 40 common concepts at depth L3 (max)
+  - + 5 NEET bridging concepts at L3
+  - + 10 NTSE aptitude concepts at L2
+  - Total: 55 concepts, one path, covers all three goals
+```
 
 **Class Transition:**
 - When student moves Class 8 → Class 9, system:
@@ -298,7 +334,7 @@ Plus:
   3. Skips mastered, focuses on new
   4. "Don't teach me twice" applied across classes
 
-**Key Principle:** Class 8 content and Class 11 content do NOT merge. Each class is its own bubble. Combined course works WITHIN a class (depth-merge), not across classes.
+**Key Principle:** Class 8 content and Class 11 content do NOT merge. Each class is its own bubble. Combined course works WITHIN a class (depth-merge for foundation + syllabus-merge for scholarship), not across classes.
 
 ### 5.2 Senior (Class 11–12 + Entrance Exams)
 
@@ -463,20 +499,35 @@ EXAM
 - Enrollment adds: structured path + progress tracking + personalization + AI tutor.
 - Skills segment is the purest expression of this model (tutorial-first).
 
-### 5.6 GK (Current Affairs — Exam-Centric)
+### 5.6 GK (Current Affairs — Exam-Centric, Content-First)
 
 **Audience:** Everyone. GK is needed by all exam aspirants at different levels.
 
-**Content Model:**
-- Daily feed of current affairs
-- Categorized: Polity, Economy, Science, Sports, International, National, Awards, Appointments, etc.
-- Each item linked to: Concepts (knowledge graph) + Exams (exam relevance) + Difficulty level
+**Content Model — CONTENT FIRST, then practice on demand:**
+- **Step 1: Content** — Daily feed of current affairs articles, notes, explanations (readable free)
+- **Step 2: Practice (on demand)** — MCQs, Quizzes, QNA, MockTests accessible when user wants to practice
+- **Step 3: Exam-wise access** — User can access "SSC Polity MCQs", "RRB Science Quiz", "UPSC Economy MockTest" etc.
+
+**Structure:**
+```
+/gk/
+├── /gk/                          → Daily feed (content-first: articles, notes)
+├── /gk/[category]/               → Category page (polity, economy, science, etc.) — content + practice links
+├── /gk/article/[slug]/           → Article page (indexable, content-first)
+├── /gk/exam/[exam-slug]/         → Exam-specific GK (e.g., /gk/exam/ssc-cgl/)
+│   ├── MCQs                       → Exam-wise subject MCQs
+│   ├── Quiz                       → Exam-wise quizzes
+│   ├── QNA                        → Exam-wise QNA
+│   └── MockTest                   → Exam-wise mock tests
+└── /gk/practice/[type]/          → Practice launcher (MCQ / Quiz / QNA / MockTest)
+```
 
 **Exam-Centric Personalization:**
 - RRB Group D aspirant: basic GK, high-level facts
 - SSC CGL aspirant: medium depth GK
 - UPSC aspirant: deep analytical GK
 - Same event, different depth presentations — powered by the same underlying data
+- User sees GK filtered/recommended for their enrolled exam(s)
 
 **GK is NOT a Subject — It's a Collection Layer:**
 - Questions have a `subject` (Biology, Polity, etc.) and a `gk_relevance` field (None/General/High)
@@ -485,27 +536,45 @@ EXAM
 
 **Cross-Segment Feeding:**
 - GK feeds into Coaching (exam widget: "आज का GK for SSC")
+- GK feeds into Senior (NEET/JEE current affairs)
 - GK feeds into School (age-appropriate current affairs)
-- GK feeds into College (placement current affairs)
 
-### 5.7 Atlas (Books Solutions)
+### 5.7 Atlas (Books Solutions — Multi-Segment Reference)
 
-**Audience:** Students looking for textbook solutions (NCERT, state board, reference books).
+**Audience:** Students across ALL segments looking for textbook solutions.
+
+**Coverage — ALL segments' book solutions:**
+- **School (Class 6–10):** NCERT + state board textbooks (Science, Math, Social Science, English, Hindi)
+- **Senior (Class 11–12):** NCERT + reference books (Physics, Chemistry, Biology, Math) per stream
+- **College:** Degree/semester textbooks (B.Tech, BSc, BCom, BA, BCA etc. per subject)
+- **ITI:** Trade-specific textbooks + workshop manuals per trade/semester
+- **Skills:** (optional) tutorial book references
 
 **Content Model:**
-- Organized by: Book → Chapter → Exercise → Question → Solution
+- Organized by: Segment → Class/Year/Semester → Subject/Course → Book → Chapter → Exercise → Question → Solution
 - Indexable pages (SEO traffic engine)
 - Each solution links to: underlying concept (knowledge graph), related questions, practice
 
+**URL Structure:**
+```
+/atlas/
+├── /atlas/school/class/[n]/[subject]/    → School book solutions
+├── /atlas/senior/class/[12]/[subject]/   → Senior book solutions
+├── /atlas/college/[degree]/[semester]/[subject]/  → College book solutions
+├── /atlas/iti/[trade]/[semester]/[subject]/       → ITI book solutions
+├── /atlas/book/[slug]/                   → Book detail page
+└── /atlas/book/[slug]/[chapter]/         → Chapter solutions (indexable)
+```
+
 **Purpose:**
-1. **SEO Traffic Magnet:** High search volume for "NCERT Class 10 Maths Chapter 1 Solutions"
-2. **Lead Generation:** Atlas → School/Coaching enrollment ("Want structured learning? Enroll free")
+1. **SEO Traffic Magnet:** High search volume for "NCERT Class 10 Maths Chapter 1 Solutions" + college + ITI queries
+2. **Lead Generation:** Atlas → segment enrollment ("Want structured learning? Enroll free")
 3. **Reference:** Quick answer lookup (W3Schools-style — free, no login)
 
 **Solution Structure:**
 ```
 Book Solution Page:
-├── Book info (title, class, board, subject)
+├── Book info (title, class/segment, board/university, subject)
 ├── Chapter info
 ├── Question (as in book)
 ├── Solution (step-by-step, Markdown + LaTeX for math)

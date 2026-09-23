@@ -98,3 +98,54 @@ Stage Summary:
 - /my dashboard created (login-gated)
 - GitHub: pushed to github.com/dk6375/niodemy main branch
 - Next session: Session 2 — Core data models + public browsing (knowledge schema, content, questions, W3Schools-style free access)
+
+---
+Task ID: 2
+Agent: Development Agent (Z.ai Code)
+Task: Session 2 — Core data models (knowledge, content, questions) + W3Schools-style public browsing.
+
+Work Log:
+- Plan v1.2 updates:
+  - School segment changed from Class 1–10 → Class 6–10 (Class 1–5 excluded, needs kids gamification — separate future product)
+  - Added Section 3.3: Combined Course Applicability (School/Senior/Coaching/GK = optional; College/ITI/Skills = none)
+  - School combined course: depth-merge (foundation) + syllabus-merge (scholarship like NTSE)
+  - GK segment: content-first structure (articles → then MCQ/Quiz/QNA/MockTest on demand)
+  - Atlas: multi-segment coverage (School/Senior/College/ITI book solutions)
+  - Domain fixed: snapzila-academy → niodemy.vercel.app
+  - Brand color consistency note added (emerald across whole platform)
+  - Home page segment cards updated with new descriptions
+- Database setup:
+  - Installed `pg` + `@types/pg` packages for SQL execution
+  - Created migration runner script: scripts/migrate.ts (uses Supabase pooler URL)
+  - Created verify script: scripts/verify.ts
+  - Created 5 SQL migration files in supabase/migrations/:
+    - 001_knowledge.sql (concepts, prerequisites, translations)
+    - 002_content.sql (content_assets, versions, media)
+    - 003_questions.sql (questions, collections, collection_items)
+    - 004_fix_correct_answer.sql (jsonb → text for simpler inserts)
+    - 005_move_to_public_schema.sql (moved all tables to public schema for PostgREST access)
+  - Created seed file: supabase/seed/001_sample_data.sql
+  - Ran all migrations + seed against Supabase (project: yhofteepwxmiiftcwjun)
+  - Verified: 5 concepts, 3 lessons, 20 questions published
+- Frontend (W3Schools-style free browsing):
+  - Created query helpers: src/lib/queries/concepts.ts (getConceptBySlug, getPublishedConcepts, getContentForConcept, getQuestionsForConcept)
+  - Built QuestionPractice component (src/components/learn/question-practice.tsx): interactive MCQ with answer check, explanation toggle, try again
+  - Built concept detail page (src/app/concept/[slug]/page.tsx): definition, key facts, components, lesson (Markdown rendered), practice questions, depth layers sidebar
+  - Built concepts browse page (src/app/concepts/page.tsx): grouped by subject, subject filter, search bar (decorative)
+  - Added "Concepts" link to site header navigation
+- Testing:
+  - Dev server running, all routes return 200
+  - Agent Browser: concepts page lists all 5 concepts grouped by subject
+  - Agent Browser: concept detail page renders definition, key facts, components, lesson, 4 practice questions
+  - Agent Browser: question practice works — select option, check answer, shows "✓ Correct!", try again, show explanation
+  - VLM verified: "clean design, all sections visible (definition, key facts, components, lesson, practice questions), depth layers sidebar visible"
+  - Lint: 0 errors
+
+Stage Summary:
+- Supabase database live with 5 published concepts, 3 lessons, 20 MCQs (across Biology, Polity, Mathematics, Physics)
+- W3Schools-style free browsing working: anyone can browse concepts, read lessons, attempt questions WITHOUT login
+- RLS policies enforce: only published content readable by public; anonymous users can browse
+- Interactive question practice: select → check → see correct/incorrect → show explanation → try again
+- Concept detail page: rich layout with definition, key facts, components, rendered Markdown lesson, practice questions, depth layers sidebar
+- GitHub: pushed to github.com/dk6375/niodemy
+- Next session: Session 3 — Learner dashboard + enrollment + depth-merge combined course engine (learning schema, education schema, exams schema)

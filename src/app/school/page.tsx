@@ -3,8 +3,8 @@ import { ComingSoon } from '@/components/site/coming-soon'
 export default function SchoolPage() {
   return (
     <ComingSoon
-      segment="School (Class 1–10)"
-      description="Board exams, Olympiads, Scholarships & NEET/JEE Foundation. Depth-merge combined course for foundation goals. Coming in Phase 3."
+      segment="School (Class 6–10)"
+      description="Board exams, NEET/JEE Foundation, Scholarships & Olympiads. Optional combined course (depth-merge + syllabus-merge). Coming in Phase 3."
     />
   )
 }

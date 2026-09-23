@@ -149,3 +149,79 @@ Stage Summary:
 - Concept detail page: rich layout with definition, key facts, components, rendered Markdown lesson, practice questions, depth layers sidebar
 - GitHub: pushed to github.com/dk6375/niodemy
 - Next session: Session 3 — Learner dashboard + enrollment + depth-merge combined course engine (learning schema, education schema, exams schema)
+
+---
+Task ID: 3
+Agent: Development Agent (Z.ai Code)
+Task: Session 3 — Learner dashboard + enrollment + depth-merge combined course engine.
+
+Work Log:
+- Set git config: user.email = careeralertonline@gmail.com, user.name = dk6375 (for all future commits)
+- Database migrations:
+  - 006_education.sql: boards, classes, curriculums, curriculum_concepts tables (+ RLS: public read)
+  - 007_learning.sql: enrollments, learning_paths, progress, attempts, bookmarks, notes tables (+ RLS: owner-only CRUD via auth.uid())
+- Seed data (002_education_curriculum.sql):
+  - Board: CBSE
+  - Class: Class 8 (level 8, segment 'school')
+  - 2 curriculums: "Class 8 CBSE Science" (academic_year 2025-26) + "Class 8 NEET Foundation Science"
+  - Mapped existing concepts (Photosynthesis, Newton's Laws) to both curriculums at different depths:
+    - CBSE Science: L2 (basic exam depth)
+    - NEET Foundation: L3 (deeper foundation depth)
+- Depth-merge combined course engine (src/lib/combined-course/depth-merge.ts):
+  - generateDepthMergeCombinedCourse(): takes userId + curriculumIds, returns merged course
+  - Algorithm: fetch all curriculum_concepts → merge by MAX depth → subtract mastered → sort by chapter order
+  - Returns: concepts with target_depth, sources (which curriculums), mastery, status, overlap_stats
+  - Saves to learning_paths table (cached for dashboard)
+  - Helper functions: getAvailableCurriculums(), getUserEnrollments(), getUserProgressSummary()
+- API routes:
+  - POST/DELETE /api/enroll — enroll/unenroll in goals
+  - POST/GET /api/combined-course — generate/fetch combined course
+- Auth pages (full functional):
+  - /login: email + password login via Supabase auth
+  - /signup: email + password + full_name signup
+- Learner dashboard (/my) — fully functional:
+  - Welcome message with user name
+  - Stats: Active Goals, Mastered, In Progress, Avg Mastery
+  - Quick links: Goals, Path, AI Tutor, Bookmarks
+  - Active goals list with enrollment details
+  - Combined course CTA when 2+ goals enrolled
+  - Overall progress bar with mastery breakdown
+- My Goals page (/my/goals):
+  - Lists available curriculums grouped by class
+  - EnrollButton component (client-side, POST /api/enroll)
+  - Shows current enrollments
+  - Combined course CTA when 2+ enrollments
+- My Path page (/my/path):
+  - Generates depth-merge combined course on load
+  - Shows header card with mode badge + overlap stats (total/common/unique)
+  - Progress bar (mastered / total)
+  - Concept list with: title, #N order, "N goals" badge, depth L#, importance, chapter name, mastery status
+  - Clickable concepts → /concept/[slug]
+- Helper scripts:
+  - scripts/create-user.ts: create test user directly via SQL (bypasses email rate limit)
+  - scripts/confirm-users.ts: auto-confirm unconfirmed users
+  - scripts/list-users.ts: list auth users
+- End-to-end testing (Agent Browser):
+  - Created demo user (demo@niodemy.test / demo1234)
+  - Logged in → redirected to /my dashboard
+  - "Welcome back, demo!" shown
+  - Navigated to /my/goals → saw 2 available curriculums (Class 8 CBSE Science + NEET Foundation)
+  - Enrolled in BOTH → "Combined Course Ready!" message appeared
+  - Clicked "View Combined Course" → /my/path
+  - Combined course generated successfully:
+    - Header: "Depth-Merge Combined Course" badge
+    - Stats: Total 2, Common 2, Unique 0 (both concepts in both curriculums)
+    - Progress: 0/2 mastered (0%)
+    - 2 concepts listed: Photosynthesis (Depth L3, 2 goals, high, "Crop Production and Management") + Newton's Laws (Depth L3, 2 goals, high, "Force and Pressure")
+    - Both marked "Not started"
+  - Depth correctly merged: CBSE L2 + Foundation L3 → L3 (max)
+- Lint: 0 errors
+
+Stage Summary:
+- Depth-merge combined course engine WORKING end-to-end
+- User can: signup → login → enroll in multiple goals → get ONE combined course (not separate courses)
+- Same NCERT concepts taught at max depth across goals (Allen Kota model online)
+- Progress tracking + "Knowledge Passport" foundation laid (mastery per concept per user, portable across goals)
+- Overlap stats show "72% common" style pitch (here: 2/2 common = 100%)
+- GitHub: pushed to github.com/dk6375/niodemy with careeralertonline@gmail.com email
+- Next session: Session 4 — Coaching segment + syllabus-merge combined course engine (exams schema, exam_concepts, RRB+SSC+Police multi-exam combined course)

@@ -1,9 +1,23 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import { LayoutDashboard, Target, BookOpen, TrendingUp, Bookmark, MessageSquare } from 'lucide-react'
+import Link from 'next/link'
+import {
+  LayoutDashboard, Target, BookOpen, TrendingUp, Bookmark,
+  MessageSquare, Sparkles, ArrowRight, CheckCircle2, Clock,
+} from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import Link from 'next/link'
+import { Badge } from '@/components/ui/badge'
+import {
+  getUserEnrollments,
+  getUserProgressSummary,
+} from '@/lib/combined-course/depth-merge'
+import { Progress } from '@/components/ui/progress'
+
+export const metadata = {
+  title: 'My Dashboard',
+  description: 'Your learning dashboard — goals, progress, combined courses.',
+}
 
 export default async function MyDashboard() {
   const supabase = await createClient()
@@ -13,11 +27,14 @@ export default async function MyDashboard() {
     redirect('/login')
   }
 
+  const enrollments = await getUserEnrollments(user.id)
+  const summary = await getUserProgressSummary(user.id)
+
   const stats = [
-    { label: 'Active Goals', value: '0', icon: Target },
-    { label: 'Concepts Mastered', value: '0', icon: BookOpen },
-    { label: 'Avg Mastery', value: '0%', icon: TrendingUp },
-    { label: 'Bookmarks', value: '0', icon: Bookmark },
+    { label: 'Active Goals', value: enrollments.length, icon: Target },
+    { label: 'Concepts Mastered', value: summary.mastered, icon: CheckCircle2 },
+    { label: 'In Progress', value: summary.learning, icon: Clock },
+    { label: 'Avg Mastery', value: `${summary.avgMastery}%`, icon: TrendingUp },
   ]
 
   const quickLinks = [
@@ -28,8 +45,9 @@ export default async function MyDashboard() {
   ]
 
   return (
-    <div className="container mx-auto px-4 py-8 sm:px-6 sm:py-12">
-      <div className="mb-8">
+    <div className="container mx-auto px-4 py-6 sm:px-6 sm:py-8">
+      {/* Welcome */}
+      <div className="mb-6">
         <h1 className="text-2xl font-bold sm:text-3xl">
           Welcome back{user.email ? `, ${user.email.split('@')[0]}` : ''}!
         </h1>
@@ -77,18 +95,105 @@ export default async function MyDashboard() {
         })}
       </div>
 
-      {/* Empty State */}
-      <Card className="mt-8 p-8 text-center">
-        <LayoutDashboard className="mx-auto mb-3 h-10 w-10 text-muted-foreground/50" />
-        <h3 className="text-base font-semibold">Start your learning journey</h3>
-        <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">
-          You haven&apos;t enrolled in any goals yet. Browse segments and enroll
-          to get a combined course & personalized plan.
-        </p>
-        <Button asChild className="mt-4">
-          <Link href="/coaching">Browse Segments</Link>
-        </Button>
-      </Card>
+      {/* Active Goals */}
+      <h2 className="mb-4 mt-8 text-lg font-semibold">Active Goals ({enrollments.length})</h2>
+      {enrollments.length > 0 ? (
+        <div className="space-y-3">
+          {enrollments.map((e: any) => (
+            <Card key={e.id} className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <Target className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="font-semibold">{e.target_name || e.target_id}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {e.segment} · {e.target_type} · Priority {e.priority}
+                    </p>
+                  </div>
+                </div>
+                <Badge variant="secondary">{e.status}</Badge>
+              </div>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <Card className="p-8 text-center">
+          <LayoutDashboard className="mx-auto mb-3 h-10 w-10 text-muted-foreground/50" />
+          <h3 className="text-base font-semibold">Start your learning journey</h3>
+          <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">
+            You haven&apos;t enrolled in any goals yet. Browse segments and enroll
+            to get a combined course & personalized plan.
+          </p>
+          <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:justify-center">
+            <Button asChild>
+              <Link href="/concepts">
+                <BookOpen className="mr-1.5 h-4 w-4" />
+                Browse Concepts
+              </Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/my/goals">
+                Add Goals
+                <ArrowRight className="ml-1.5 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+        </Card>
+      )}
+
+      {/* Combined Course CTA */}
+      {enrollments.length >= 2 && (
+        <Card className="mt-6 border-primary/30 bg-primary/5 p-6">
+          <div className="flex items-start gap-3">
+            <Sparkles className="mt-0.5 h-5 w-5 text-primary" />
+            <div className="flex-1">
+              <h3 className="text-base font-semibold">Combined Course Available!</h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                You have {enrollments.length} goals. Generate a combined course
+                to learn all of them in one optimized path — no duplication.
+              </p>
+              <Button asChild size="sm" className="mt-3">
+                <Link href="/my/path">
+                  Generate Combined Course
+                  <ArrowRight className="ml-1.5 h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </Card>
+      )}
+
+      {/* Progress Overview (if any progress exists) */}
+      {summary.total > 0 && (
+        <Card className="mt-6 p-6">
+          <h3 className="mb-3 text-base font-semibold">Overall Progress</h3>
+          <div className="space-y-4">
+            <div>
+              <div className="mb-1 flex justify-between text-sm">
+                <span className="text-muted-foreground">Avg Mastery</span>
+                <span className="font-medium">{summary.avgMastery}%</span>
+              </div>
+              <Progress value={summary.avgMastery} className="h-2" />
+            </div>
+            <div className="grid grid-cols-3 gap-3 text-center text-sm">
+              <div>
+                <p className="text-2xl font-bold text-primary">{summary.mastered}</p>
+                <p className="text-xs text-muted-foreground">Mastered</p>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-amber-500">{summary.learning}</p>
+                <p className="text-xs text-muted-foreground">Learning</p>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-muted-foreground">{summary.total}</p>
+                <p className="text-xs text-muted-foreground">Total</p>
+              </div>
+            </div>
+          </div>
+        </Card>
+      )}
     </div>
   )
 }

@@ -1451,34 +1451,55 @@ async function aiDoubtResponse(roomId: string, doubt: string, conceptId: string)
 
 ---
 
-## 10. Console (Admin & Teacher Dashboard)
+## 10. Console & Teacher Dashboard (Two Separate Systems)
 
-### 10.1 Purpose
+### 10.1 Two Separate Systems (Important)
 
-> **कंपनी के सभी काम और management के लिए console के अंदर सब कुछ बनाना।**
+> **Console = company internal management only. Teacher Dashboard = separate, for teachers' actual work.**
 
-The Console is the control center for the entire platform. All company operations happen here.
+There are **two separate admin-side systems**, NOT one:
 
-### 10.2 Console Modules
+| System | Route | Who uses it | What for |
+|---|---|---|---|
+| **Console** | `/console` | Admins + Content Writers | Company internal management: content authoring, exam/curriculum management, teacher management, user management, analytics, settings |
+| **Teacher Dashboard** | `/teacher` | Teachers only | Teachers' actual work: doubt queue, live classes, student progress, QNA responses, chat with students |
+
+**Teachers do NOT use the Console.** They use their own dedicated Teacher Dashboard. This separation is intentional:
+- Console = content production + company ops (content writers, admins)
+- Teacher Dashboard = teaching work (live classes, doubt solving, student interaction)
+
+### 10.2 Console Modules (Internal Company Management)
 
 | Module | Route | Purpose |
 |---|---|---|
-| **Content Authoring** | `/console/content` | Create/edit lessons, tutorials, articles. Rich Markdown editor + media upload. |
-| **Question Bank** | `/console/questions` | Create/edit MCQs, PYQs. Bulk import. Tag to concepts/exams. |
-| **Exam Management** | `/console/exams` | Add/edit exams, syllabus, patterns, cycles, eligibility, related exams. |
-| **Curriculum Management** | `/console/curriculum` | Manage boards, classes, subjects, curriculum-concept mappings. |
-| **Concept Graph** | `/console/concepts` | Manage concepts, prerequisites, depth layers, translations. |
-| **GK Management** | `/console/gk` | Publish current affairs, tag to concepts/exams. |
-| **Atlas (Books)** | `/console/atlas` | Manage books, chapters, solutions. |
-| **Chat Moderation** | `/console/chat` | Review doubts, flag inappropriate content, teacher response queue. |
-| **User Management** | `/console/users` | View/manage users, roles, enrollments. |
-| **Teacher Dashboard** | `/console/teachers` | Teacher profiles, assignments, performance. |
-| **Analytics** | `/console/analytics` | Platform analytics — content performance, user engagement, learning outcomes. |
-| **Live Classes** | `/console/live` | Schedule live classes, manage YouTube streams, chat moderation. |
-| **Audit Logs** | `/console/audit` | All changes tracked. |
-| **Settings** | `/console/settings` | Platform configuration, SEO settings, feature flags. |
+| **Content Authoring** | `/console/content` | Create/edit lessons, tutorials, articles. Rich Markdown editor + media upload. (Content writers) |
+| **Question Bank** | `/console/questions` | Create/edit MCQs, PYQs. Bulk import. Tag to concepts/exams. (Content writers) |
+| **Exam Management** | `/console/exams` | Add/edit exams, syllabus, patterns, cycles, eligibility, related exams. (Admin) |
+| **Curriculum Management** | `/console/curriculum` | Manage boards, classes, subjects, curriculum-concept mappings. (Admin) |
+| **Concept Graph** | `/console/concepts` | Manage concepts, prerequisites, depth layers, translations. (Admin/Content writer) |
+| **GK Management** | `/console/gk` | Publish current affairs, tag to concepts/exams. (Content writers) |
+| **Atlas (Books)** | `/console/atlas` | Manage books, chapters, solutions. (Content writers) |
+| **Teacher Management** | `/console/teachers` | CRUD teacher profiles, assign subjects, view teacher performance. (Admin) |
+| **User Management** | `/console/users` | View/manage users, roles, enrollments. (Admin) |
+| **Analytics** | `/console/analytics` | Platform analytics — content performance, user engagement, learning outcomes. (Admin) |
+| **Audit Logs** | `/console/audit` | All changes tracked. (Admin) |
+| **Settings** | `/console/settings` | Platform configuration, SEO settings, feature flags. (Admin) |
 
-### 10.3 Content Authoring Tool
+**Note:** Live class scheduling + chat moderation are NOT in Console — they live in Teacher Dashboard (since teachers do that work).
+
+### 10.3 Teacher Dashboard Modules (Teachers' Workspace)
+
+| Module | Route | Purpose |
+|---|---|---|
+| **Doubt Queue** | `/teacher/doubts` | Student doubts awaiting response (chapter chat). Teacher replies or AI assists. |
+| **Live Classes** | `/teacher/live` | Schedule + host live classes (YouTube stream + group chat). |
+| **QNA Responses** | `/teacher/qna` | Respond to QNA forum questions in their subject. |
+| **My Students** | `/teacher/students` | Students enrolled in their subjects — progress overview, weak areas. |
+| **My Content** | `/teacher/content` | Content authored by this teacher (read-only view, edit goes via Console if permitted). |
+| **My Schedule** | `/teacher/schedule` | Upcoming live classes, pending doubts, today's tasks. |
+| **My Profile** | `/teacher/profile` | Their expertise, bio, segments, availability. |
+
+### 10.4 Content Authoring Tool (in Console)
 
 Rich editor for creating structured content:
 - **Markdown editor** (@mdxeditor/editor) — for prose content
@@ -1496,23 +1517,16 @@ Rich editor for creating structured content:
 - Add PPT/slides later.
 - All media types stored in `content.media` table, linked to content.
 
-### 10.4 Teacher Dashboard
-
-Separate view within console for teachers:
-- **Assigned content** — what content they need to create/review
-- **Doubt queue** — student doubts awaiting their response (chapter chat)
-- **Live class schedule** — their upcoming live classes
-- **Performance** — their content's engagement, student outcomes
-- **Students** — students enrolled in their subjects (progress overview)
-
 ### 10.5 Role-Based Access
 
 | Role | Can Access |
 |---|---|
 | `learner` | Public content + /my dashboard |
-| `content_writer` | Console → Content Authoring (own assignments) + Question Bank (create) |
-| `teacher` | Console → Content + Questions + Doubt Queue + Live Classes + Teacher Dashboard |
-| `admin` | Full Console access (all modules) |
+| `content_writer` | Console → Content Authoring + Question Bank + GK/Atlas management (own assignments) |
+| `teacher` | Teacher Dashboard → Doubt Queue + Live Classes + QNA + My Students + My Schedule |
+| `admin` | Full Console access (all Console modules) + Teacher Dashboard |
+
+**Note:** A teacher does NOT access Console. A content writer does NOT access Teacher Dashboard. Admins access both.
 
 ---
 

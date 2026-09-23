@@ -293,3 +293,84 @@ Stage Summary:
 - Both combined course engines now live: depth-merge (School) + syllabus-merge (Coaching)
 - GitHub: pushed to github.com/dk6375/niodemy (careeralertonline@gmail.com)
 - Next session: Session 5 — Console (content authoring + exam management + teacher dashboard)
+
+---
+Task ID: 5
+Agent: Development Agent (Z.ai Code)
+Task: Session 5 — Console (internal company management) + Teacher Dashboard (separate).
+
+Work Log:
+- Important architectural clarification (user feedback):
+  - Console = company internal management ONLY (admins + content writers)
+  - Teacher Dashboard = SEPARATE system at /teacher route (teachers only)
+  - Teachers do NOT use Console. They use their own dedicated dashboard.
+- Updated PLAN.md Section 10: split into two systems (Console + Teacher Dashboard)
+  - Console modules: Content, Questions, Concepts, Exams, Teachers management, Users, Analytics, Audit, Settings, Curriculum
+  - Teacher Dashboard modules: Doubt Queue, Live Classes, QNA, My Students, My Schedule, My Profile
+- Updated proxy.ts to protect /teacher routes too (login-gated)
+- Database migration 009_profiles_teachers_audit.sql:
+  - profiles table (extends auth.users with role: learner/content_writer/teacher/admin)
+  - teacher_profiles table (expertise[], segments[], bio, is_active)
+  - audit_logs table (track all admin changes)
+  - RLS: profiles public read, teacher_profiles public read (active only), audit_logs self-read
+  - Auto-create profile on signup trigger (handle_new_user)
+- RBAC helpers (src/lib/console/rbac.ts):
+  - getAuthUser(): fetches user + role from profiles
+  - canAccessConsole(user): content_writer or admin
+  - canAccessTeacherDashboard(user): teacher or admin
+  - isAdmin(user)
+- Helper script: scripts/promote-user.ts (promote user to admin/teacher/content_writer)
+  - Promoted demo@niodemy.test to admin role for testing
+- Console (internal company management) — /console:
+  - layout.tsx: sidebar + role-gated access (content_writer + admin)
+  - ConsoleSidebar component: nav with live counts badges (Content 3, Questions 20, etc.)
+  - /console (dashboard): 6 stat cards + content status overview + quick actions
+  - /console/content: list all content with type/segment/status badges
+  - /console/content/new: create new content
+  - /console/content/[id]: edit existing content
+  - ContentEditor component: Markdown editor + structured fields (title, slug, type, segment, status, concept link, SEO fields)
+    - Auto-generates slug from title
+    - Save as status / Publish buttons
+    - Preview toggle for Markdown body
+  - /console/questions: question bank list (type, difficulty, subject, status badges)
+  - /console/concepts: concept grid with subject/domain badges + public page link
+  - /console/exams: exam list with category + concept count badges
+  - /console/teachers: teacher management (expertise, segments, active status)
+  - /console/users: user list with role badges (admin/content_writer/teacher/learner)
+  - /console/analytics: 6 overview stats + "detailed analytics coming soon" placeholder
+  - /console/audit: audit logs (action badges: create/publish/update/delete)
+  - /console/curriculum: curriculum list
+  - /console/settings: placeholder
+  - API: /api/console/content (POST/PUT/DELETE) — creates audit log entries on all changes
+- Teacher Dashboard (separate system) — /teacher:
+  - layout.tsx: separate sidebar (Dashboard, Doubt Queue, Live Classes, QNA, My Students, My Schedule, My Profile) + role-gated access (teacher + admin)
+  - /teacher (dashboard): welcome message, "Complete Your Teacher Profile" alert if no profile, 4 stat cards (Pending Doubts, Upcoming Classes, My Students, This Week), Today's Tasks placeholder, Quick Access grid
+  - /teacher/doubts: doubt queue placeholder (chat system coming Session 6)
+  - /teacher/live: live classes placeholder
+  - /teacher/qna: QNA responses placeholder
+  - /teacher/students: my students placeholder
+  - /teacher/schedule: my schedule placeholder
+  - /teacher/profile: ProfileEditor component (expertise tags, segment toggles, bio, active checkbox)
+  - API: /api/teacher/profile (POST/PUT) — creates/updates teacher_profile, auto-promotes role to teacher
+- End-to-end testing (Agent Browser):
+  - Logged in as demo@niodemy.test (admin role)
+  - /console: sidebar with counts (Content 3, Questions 20, Concepts 5, Exams 3, Users 1), 6 stat cards, content status cards, quick actions
+  - /console/content/new: full editor — title auto-generates slug, status/type/segment dropdowns, concept dropdown, Markdown textarea, preview toggle, SEO fields, save/publish buttons
+  - /teacher: separate sidebar (Dashboard, Doubt Queue, Live Classes, QNA, My Students, My Schedule, My Profile), "Welcome, Demo User!", "Complete Your Teacher Profile" alert, 4 stat cards, quick access
+  - VLM verified Console: "Admin console layout with sidebar, centralized statistics (Content, Questions, Exams), quick action shortcuts"
+- Lint: 0 errors
+
+Stage Summary:
+- TWO separate admin-side systems built:
+  1. Console (/console) — for admins + content writers — content authoring, exam/curriculum management, teacher management, user management, analytics, audit logs
+  2. Teacher Dashboard (/teacher) — for teachers only — doubt queue, live classes, QNA, students, schedule, profile
+- Role-based access control (RBAC) enforced:
+  - Console: content_writer + admin only
+  - Teacher Dashboard: teacher + admin only
+  - Access denied page shown if wrong role
+- Content authoring tool fully functional: Markdown editor + structured fields + SEO + versioning-ready + auto-audit-logging
+- profiles table auto-creates on signup (trigger)
+- Demo user promoted to admin for testing
+- Teacher Dashboard placeholders ready for Session 6 (chat system) and live classes
+- GitHub: pushed to github.com/dk6375/niodemy (careeralertonline@gmail.com)
+- Next session: Session 6 — Unified Chat System (4 contexts: chapter doubt, live class, AI tutor, QNA) + Socket.io mini-service + AI integration

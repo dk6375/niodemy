@@ -1,7 +1,7 @@
 # SnapZila Academy — Master Development Plan
 
-> **Document Version:** 1.0  
-> **Last Updated:** Session 0 (Planning Phase)  
+> **Document Version:** 1.1  
+> **Last Updated:** Session 0 (Planning Phase) — v1.1 adds Senior (Class 11–12) segment + Hybrid-Merge combined course  
 > **Status:** FINAL — Ready for development  
 > **Purpose:** Any AI engineer or developer should be able to read this single document and build the entire platform from scratch.
 
@@ -134,8 +134,8 @@ A unified learning ecosystem where:
 │  ┌────────────────────────────────────────────────────────┐  │
 │  │  PUBLIC LAYER (W3Schools-style — no login to browse)  │  │
 │  │                                                        │  │
-│  │  /school    /coaching   /college   /iti   /skills      │  │
-│  │  /gk        /atlas                                │  │
+│  │  /school    /senior     /coaching   /college   /iti      │  │
+│  │  /skills    /gk         /atlas                          │  │
 │  │                                                        │  │
 │  │  All concepts, content, questions, quizzes,           │  │
 │  │  mock tests, tutorials, chapters — browsable free.    │  │
@@ -169,7 +169,8 @@ A unified learning ecosystem where:
 
 | Segment | Route | Audience | Content Style | Combined Course Mode |
 |---|---|---|---|---|
-| **School** | `/school` | Class 1–12 students | Chapter-based, board-specific | Depth-merge |
+| **School** | `/school` | Class 1–10 students | Chapter-based, board-specific | Depth-merge |
+| **Senior** | `/senior` | Class 11–12 students (+ NEET/JEE/CUET) | Board + entrance integrated | Hybrid-merge |
 | **Coaching** | `/coaching` | After 12th competitive exam aspirants | Concept + MCQ + PYQ + Mock (drill-based) | Syllabus-merge |
 | **College** | `/college` | Degree students | Semester + subject + placement | Per-semester path |
 | **ITI** | `/iti` | ITI trade students | Trade + workshop + practical | Trade-based path |
@@ -199,7 +200,8 @@ Plus:
 
 | Segment | Name | Route | Notes |
 |---|---|---|---|
-| Class 1–12 | **School** | `/school` | Simple, clear |
+| Class 1–10 | **School** | `/school` | Simple, clear |
+| Class 11–12 (+ NEET/JEE/CUET) | **Senior** | `/senior` | Higher secondary; board + entrance integrated |
 | Competitive coaching (after 12th) | **Coaching** | `/coaching` | Simple. NOT "Academy" (avoids confusion with brand) |
 | College/University | **College** | `/college` | Simple |
 | ITI/Vocational | **ITI** | `/iti` | Simple |
@@ -213,11 +215,17 @@ Plus:
 
 ```
 [domain].vercel.app/                    → Home (segment navigation + search)
-├── /school/                            → School home
+├── /school/                            → School home (Class 1–10)
 │   ├── /school/class/[class]/          → Class-specific page (e.g., /school/class/8/)
 │   ├── /school/class/[class]/[subject]/ → Subject page
 │   ├── /school/class/[class]/[subject]/[chapter]/ → Chapter page
 │   └── /school/concept/[slug]/         → Concept detail page (indexable)
+├── /senior/                            → Senior home (Class 11–12 + entrance)
+│   ├── /senior/class/[12]/             → Class page (stream: Science/Bio, Science/Math, Commerce, Arts)
+│   ├── /senior/class/[12]/[subject]/   → Subject page
+│   ├── /senior/exam/[slug]/            → Entrance exam detail (NEET/JEE/CUET)
+│   ├── /senior/concept/[slug]/         → Concept detail (shared knowledge graph)
+│   └── /senior/practice/[type]/        → Practice (board-qna / neet-mcq / speed-drill / pyq)
 ├── /coaching/                          → Coaching home
 │   ├── /coaching/exam/[slug]/          → Exam detail (indexable)
 │   ├── /coaching/concept/[slug]/       → Concept detail (shared with school if same concept)
@@ -262,9 +270,9 @@ Plus:
 
 ## 5. Segments Deep-Dive
 
-### 5.1 School (Class 1–12)
+### 5.1 School (Class 1–10)
 
-**Audience:** Class 1–12 students across boards (CBSE, ICSE, State boards like MP Board).
+**Audience:** Class 1–10 students across boards (CBSE, ICSE, State boards like MP Board).
 
 **Content Model:**
 - Organized by: Board → Class → Subject → Chapter → Concept → Lesson
@@ -292,7 +300,64 @@ Plus:
 
 **Key Principle:** Class 8 content and Class 11 content do NOT merge. Each class is its own bubble. Combined course works WITHIN a class (depth-merge), not across classes.
 
-### 5.2 Coaching (After 12th — Competitive Exams)
+### 5.2 Senior (Class 11–12 + Entrance Exams)
+
+**Audience:** Class 11–12 students across streams (Science-Bio, Science-Math, Commerce, Arts) who are ALSO preparing for entrance exams (NEET, JEE Main, JEE Advanced, CUET) alongside their board exams.
+
+**Why Senior is a separate segment (not part of School):**
+Class 11–12 + NEET/JEE is fundamentally different from Class 1–10 + Olympiad:
+1. **Dual intense goals:** Board exam (detailed written answers) + Entrance exam (speed MCQs) — both high-stakes.
+2. **Same syllabus, different demands:** NEET/JEE syllabus = NCERT Class 11–12 syllabus. Same concepts, but NEET needs DEPTH + SPEED + PYQ practice, while board needs DETAILED QNA + long-form answers.
+3. **Different practice modes:** Board = long-answer writing practice; NEET = timed MCQ drills (180 Qs in 180 min).
+4. **Foundation → Senior continuity:** Class 8 NEET Foundation student → Class 11 Senior (NEET track). Mastery carries over ("don't teach me twice").
+5. **Allen Kota model:** NCERT taught at entrance-exam depth, not separate advanced content.
+
+**Content Model:**
+- Organized by: Board → Class (11/12) → Stream → Subject → Chapter → Concept → Lesson
+- Each concept has BOTH board-level depth (L2–L3) AND entrance-level depth (L3–L4)
+- Question types for BOTH formats:
+  - Board: long-form, short-form, diagram-based, source-based
+  - Entrance: MCQ (single correct), MCQ (multiple correct), assertion-reason, numerical, matching
+
+**Goals a student can have:**
+- Class 11/12 board exam (stream-specific)
+- NEET (if Science-Bio stream)
+- JEE Main / JEE Advanced (if Science-Math stream)
+- CUET (for central university admission)
+- State CET / other entrance
+
+**Combined Course Mode: Hybrid-Merge (the third mode)**
+
+Student: Class 12 CBSE (Science-Bio) + NEET
+- **Syllabus:** Same NCERT Biology concepts. NEET may add a few extension concepts.
+- **Depth:** max(board_depth, neet_depth) = neet_depth (L3–L4).
+- **Practice formats:** Board QNA (long-form) + NEET MCQ (timed) + NEET PYQs + Board PYQs.
+- **Speed dimension:** NEET needs 180 questions in 180 minutes → timed speed drills.
+- **Result:** ONE combined course that prepares for BOTH board + NEET simultaneously.
+
+```
+Combined Class 12 + NEET course =
+  Concepts (depth = NEET level)
+  + Board QNA practice (for written exam)
+  + NEET MCQ practice (for entrance)
+  + NEET PYQs (last 10 years)
+  + Board PYQs (last 10 years)
+  + Speed drills (timed MCQ sets)
+  + Daily plan balancing: concept learning + board practice + NEET practice
+```
+
+**The Pitch:** "आपको board + NEET दोनों की तैयारी एक ही course में। Board के लिए detailed answers, NEET के लिए speed MCQs — सब cover।"
+
+**Transition: School → Senior:**
+- Class 10 student (with NEET Foundation goal) → Class 11 Senior (NEET track)
+- System: loads Class 11 curriculum, checks mastery from Class 8–10 foundation, skips mastered, deepens to NEET level.
+- Foundation mastery → Senior credit. No re-learning.
+
+**Transition: Senior → Coaching (droppers):**
+- Class 12 student didn't crack NEET → takes a drop year → joins Coaching segment
+- System: carries NEET mastery forward, focuses on weak areas + advanced PYQ practice.
+
+### 5.3 Coaching (After 12th — Competitive Exams)
 
 **Audience:** Students preparing for government job / competitive exams after 12th.
 
@@ -333,7 +398,7 @@ EXAM
 
 **Exam Cycles:** Exam identity is permanent; cycles (SSC CGL 2026) change yearly. `exams` table = permanent identity, `exam_cycles` table = yearly instance (syllabus/pattern/dates may change).
 
-### 5.3 College (Degree + Semester + Placement)
+### 5.4 College (Degree + Semester + Placement)
 
 **Audience:** University/college students pursuing degrees (B.Tech, BSc, BA, BCom, BCA, etc.).
 
@@ -350,7 +415,7 @@ EXAM
 
 **Later Phase:** Full college ERP is OUT OF SCOPE. We provide learning content + progress, not college administration.
 
-### 5.4 ITI (Trades + Workshop + Practical)
+### 5.5 ITI (Trades + Workshop + Practical)
 
 **Audience:** ITI students learning trades (Electrician, Fitter, Welder, COPA, etc.).
 
@@ -366,7 +431,7 @@ EXAM
 - Viva questions
 - Trade-specific calculations
 
-### 5.5 Skills (Project-Based, W3Schools Tutorials Model)
+### 5.6 Skills (Project-Based, W3Schools Tutorials Model)
 
 **Audience:** Anyone wanting to learn a skill (coding, Excel, digital marketing, graphic design, export-import, shop management, etc.).
 
@@ -726,9 +791,13 @@ create table questions.questions (
   explanation text,  -- Markdown explanation
   concept_id uuid references knowledge.concepts,
   difficulty int default 2,  -- 1-5
+  exam_format text default 'any',  -- board / competitive / both / any (determines practice type)
+  time_recommended int,  -- recommended solve time in seconds (for speed drills)
+  marks int,  -- marks for this question (for board long-form: 5/3/2; for MCQ: 4/1)
   source text,  -- pyq / custom / book
-  source_ref text,  -- "SSC CGL 2023 Shift 1" or "NCERT Class 10 Ex 1.1 Q2"
-  exam_id uuid references exams.exams,  -- if PYQ
+  source_ref text,  -- "SSC CGL 2023 Shift 1" or "NCERT Class 10 Ex 1.1 Q2" or "CBSE Board 2023 Q5"
+  exam_id uuid references exams.exams,  -- if PYQ (entrance exam)
+  board_ref text,  -- if board PYQ: "CBSE Class 12 2023" or "MP Board 2022"
   exam_year int,
   gk_relevance text default 'none',  -- none / general / high
   status text default 'draft',  -- draft / review / published
@@ -969,11 +1038,12 @@ create policy "Staff can read audit logs"
 
 ## 8. Combined Course Engine
 
-### 8.1 Two Modes
+### 8.1 Three Modes
 
 | Mode | Segment | What It Does | Example |
 |---|---|---|---|
 | **Depth-Merge** | School | Same class, same concepts, deeper depth for foundation goals | Class 8 CBSE + Class 8 NEET Foundation = same NCERT, taught deeper |
+| **Hybrid-Merge** | Senior | Same syllabus (board + entrance), merge depth + practice formats + speed + PYQs | Class 12 CBSE Bio + NEET = one course, board QNA + NEET MCQ + speed drills |
 | **Syllabus-Merge** | Coaching | Different exams, different syllabi, union + dedupe | RRB Group D + SSC GD + MP Police = one combined course |
 
 ### 8.2 Depth-Merge Algorithm (School)
@@ -1017,7 +1087,86 @@ async function depthMergeCombinedCourse(userId: string, goals: Goal[]) {
 }
 ```
 
-### 8.3 Syllabus-Merge Algorithm (Coaching)
+### 8.3 Hybrid-Merge Algorithm (Senior — Class 11–12 + Entrance)
+
+```typescript
+// For student with goals: [Class 12 CBSE Science-Bio, NEET]
+// Same NCERT syllabus, but NEET needs deeper depth + speed + PYQs
+// Board needs detailed QNA. Merge ALL practice dimensions.
+
+async function hybridMergeCombinedCourse(userId: string, goals: Goal[]) {
+  const curriculumId = goals.find(g => g.type === 'class')?.curriculum_id;
+  const entranceExamIds = goals.filter(g => g.type === 'exam').map(g => g.exam_id);
+
+  // 1. Get curriculum concepts (board syllabus)
+  const { data: boardConcepts } = await supabase
+    .from('education.curriculum_concepts')
+    .select('concept_id, depth_required, importance, chapter_name, order_index')
+    .eq('curriculum_id', curriculumId);
+
+  // 2. Get entrance exam concepts (NEET/JEE syllabus — mostly same NCERT + extensions)
+  const { data: entranceConcepts } = await supabase
+    .from('exams.exam_concepts')
+    .select('concept_id, depth_required, importance, subject, exam_id')
+    .in('exam_id', entranceExamIds);
+
+  // 3. Merge concepts: union (board ∪ entrance), depth = MAX per concept
+  const mergedConcepts = mergeByMaxDepthAcrossBoardAndEntrance(boardConcepts, entranceConcepts);
+  // Result: same NCERT concepts at NEET depth + any extra entrance-only concepts
+
+  // 4. Subtract already-mastered (carries from Class 8-10 foundation!)
+  const { data: mastered } = await supabase
+    .from('learning.progress')
+    .select('concept_id')
+    .eq('user_id', userId)
+    .gte('mastery', 80);
+  const pending = subtractMastered(mergedConcepts, mastered);
+
+  // 5. Add prerequisites recursively
+  const withPrereqs = await addPrerequisites(pending);
+
+  // 6. Sort by chapter order (board curriculum order)
+  const sorted = sortByChapterOrder(withPrereqs);
+
+  // 7. Assemble PRACTICE LAYERS (this is what makes it hybrid):
+  //    For each concept, gather:
+  //    a) Board QNA questions (long-form, short-form, diagram-based)
+  //    b) Entrance MCQ questions (single correct, multiple correct, assertion-reason)
+  //    c) Board PYQs (last 10 years)
+  //    d) Entrance PYQs (NEET/JEE last 10 years)
+  //    e) Speed drill sets (timed MCQ batches)
+  const practiceLayers = await assemblePracticeLayers(sorted, {
+    boardCurriculumId: curriculumId,
+    entranceExamIds,
+  });
+
+  // 8. Schedule daily plan: balance concept learning + board practice + entrance practice + speed
+  const dailyPlan = scheduleHybridDaily(sorted, practiceLayers, userId, entranceExamIds);
+  // e.g., Day plan: 2 new concepts (board+entrance depth) + 1 board QNA practice + 1 NEET MCQ set + 15-min speed drill
+
+  // 9. Cache as learning_path
+  await saveLearningPath(userId, sorted, dailyPlan, practiceLayers, 'hybrid-merge');
+
+  return { concepts: sorted, practiceLayers, dailyPlan };
+}
+```
+
+**Key difference from Depth-Merge:**
+- Depth-Merge (School): only merges DEPTH. One practice format per concept.
+- Hybrid-Merge (Senior): merges DEPTH + PRACTICE FORMATS (board QNA + entrance MCQ) + SPEED DRILLS + BOTH PYQs. Multiple practice layers per concept.
+
+**Daily Plan Structure (Senior Hybrid):**
+```
+Day plan for Class 12 + NEET student:
+  - Learn: Photosynthesis at L4 depth (NEET level)  [30 min]
+  - Board Practice: Write long-form answer on Photosynthesis  [20 min]
+  - NEET Practice: 20 MCQs on Photosynthesis (timed)  [15 min]
+  - Speed Drill: 30 rapid MCQs (mixed topics, timed)  [10 min]
+  - Revision: Spaced repetition items for today  [15 min]
+  Total: ~90 min
+```
+
+### 8.4 Syllabus-Merge Algorithm (Coaching)
 
 ```typescript
 // For student with goals: [RRB Group D, SSC GD, MP Police]
@@ -1063,7 +1212,7 @@ async function syllabusMergeCombinedCourse(userId: string, examIds: string[]) {
 }
 ```
 
-### 8.4 Priority Score Formula
+### 8.5 Priority Score Formula
 
 ```
 Priority Score = 
@@ -1074,7 +1223,7 @@ Priority Score =
   (Importance × 0.15)            // concept importance for exam
 ```
 
-### 8.5 "Don't Teach Me Twice" Feature
+### 8.6 "Don't Teach Me Twice" Feature
 
 When a student adds a new goal (exam/class):
 1. System loads the new goal's concepts.
@@ -1088,7 +1237,7 @@ When a student adds a new goal (exam/class):
 - Adds UPSC as a goal → UPSC needs "Fundamental Rights" at L4.
 - System doesn't re-teach L1-L2. It shows: "You know L1-L2. Continue from L3 (Judicial Interpretation) for UPSC."
 
-### 8.6 Daily Plan Auto-Rewiring
+### 8.7 Daily Plan Auto-Rewiring
 
 Based on exam dates, the plan auto-adjusts:
 ```
@@ -1398,15 +1547,21 @@ Font: Inter (UI) + a serif or dyslexia-friendly option for content reading.
 | 23 | **Multi-language** | Hindi + English + regional (Marathi, Bengali, Tamil, etc.) via `concept_translations`. | Phase 3 |
 | 24 | **Bookmark & Note System** | Bookmark any content, take inline notes. | Phase 1 |
 | 25 | **Accessibility Suite** | Screen reader, dyslexia font, high contrast, voice nav. | Phase 3 |
+| 26 | **Speed Practice Engine (Senior)** | Timed MCQ drills for NEET/JEE speed training. Tracks questions/min + accuracy. Builds exam-day stamina. | Phase 2 (Senior) |
+| 27 | **Board QNA Practice (Senior)** | Long-form answer writing practice with model answers, marking scheme, and teacher/AI feedback. For board exam prep. | Phase 2 (Senior) |
+| 28 | **Dual PYQ Engine (Senior)** | Both board PYQs + entrance PYQs in one system. Year-wise, chapter-wise, difficulty-wise filtering. | Phase 2 (Senior) |
+| 29 | **Hybrid Daily Plan (Senior)** | Daily plan that balances: concept learning + board QNA practice + entrance MCQ practice + speed drills + revision. Auto-adjusts by exam proximity. | Phase 2 (Senior) |
 
 ### 12.2 Unique Differentiators (What No Competitor Does)
 
-1. **Combined Course (Syllabus-Merge)** — No coaching platform offers "RRB + SSC + Police in one course." This is THE differentiator.
-2. **Depth-Layered Content** — Same concept, different depth for different goals. No duplicate content. Allen Kota does this offline; nobody does it online at scale.
-3. **Cross-Segment Mastery Portability** — Mastered Photosynthesis in Class 8? It counts toward NEET Foundation. No platform tracks this.
-4. **Exam-Centric GK** — GK personalized to exam level. All competitors publish one-size-fits-all GK.
-5. **Unified Chat (Doubt + AI + Live + QNA)** — Most platforms have separate systems. We have one.
-6. **W3Schools-Style Free Access + Structured Enrollment** — Most Indian edtech locks content behind paywalls. We're free to browse, structured if enrolled.
+1. **Combined Course — THREE Modes** — Depth-merge (School foundation), Hybrid-merge (Senior board+entrance), Syllabus-merge (Coaching multi-exam). No platform offers any of these three. We offer all three.
+2. **Senior Hybrid-Merge (Board + NEET/JEE in ONE course)** — Allen Kota does this offline at ₹1L+/year. We do it online, free, with AI personalization. THE Senior differentiator.
+3. **Speed + Detail Dual Practice** — No platform offers both timed speed drills (for entrance) AND detailed long-form QNA practice (for boards) in one system. We do.
+4. **Depth-Layered Content** — Same concept, different depth for different goals. No duplicate content. Allen Kota does this offline; nobody does it online at scale.
+5. **Cross-Segment Mastery Portability** — Mastered Photosynthesis in Class 8? It counts toward NEET Foundation → Class 11 Senior → NEET. One continuous mastery journey from Class 1 to career. No platform tracks this.
+6. **Exam-Centric GK** — GK personalized to exam level. All competitors publish one-size-fits-all GK.
+7. **Unified Chat (Doubt + AI + Live + QNA)** — Most platforms have separate systems. We have one.
+8. **W3Schools-Style Free Access + Structured Enrollment** — Most Indian edtech locks content behind paywalls. We're free to browse, structured if enrolled.
 
 ---
 
@@ -1738,21 +1893,71 @@ lib/ai/tutor.ts
 
 ### Session 7: School Segment
 
-**Objective:** School segment functional for Class 8, 10, 12.
+**Objective:** School segment functional for Class 8, 10 (Class 1–10 scope).
 
 **Tasks:**
-1. Seed curriculum data: CBSE Class 8, 10, 12 (Science, Math, Social Science).
+1. Seed curriculum data: CBSE Class 8, 10 (Science, Math, Social Science).
 2. Seed ~40 concepts per class, mapped to curriculums with depth levels.
 3. Build school pages:
-   - `/school` — school home (class selector)
+   - `/school` — school home (class selector, Class 1–10)
    - `/school/class/[n]` — class page (subjects list)
    - `/school/class/[n]/[subject]` — subject page (chapters)
    - `/school/class/[n]/[subject]/[chapter]` — chapter page (concepts list + content)
-4. Implement goal options: school exam, olympiad, scholarship, foundation.
+4. Implement goal options: school exam, olympiad, scholarship, foundation (NEET/JEE Foundation).
 5. Demonstrate depth-merge: Class 8 CBSE + Class 8 NEET Foundation → combined course.
 6. Cross-class transition demo: Class 8 → Class 9 (mastery carries over).
 
-**Deliverable:** School segment live. Student can browse Class 8/10/12, enroll, get combined course (depth-merge).
+**Deliverable:** School segment live. Student can browse Class 8/10, enroll, get combined course (depth-merge).
+
+---
+
+### Session 7b: Senior Segment (Class 11–12 + NEET/JEE)
+
+**Objective:** Senior segment functional — board + entrance combined course (hybrid-merge).
+
+**Tasks:**
+1. Seed curriculum data: CBSE Class 11, 12 (Physics, Chemistry, Biology, Mathematics).
+2. Seed entrance exam data: NEET, JEE Main (basic info + syllabus mapping to concepts).
+3. Map ~60 Class 11–12 concepts to BOTH board curriculum AND entrance exams (with different depth levels).
+4. Seed question types for BOTH formats:
+   - Board QNA: long-form (5-mark), short-form (3-mark), very-short (2-mark), diagram-based, source-based
+   - Entrance MCQ: single correct, multiple correct, assertion-reason, numerical
+   - PYQs: NEET last 5 years + CBSE Board last 5 years (sample)
+5. Build Senior pages:
+   - `/senior` — Senior home (class + stream selector: Science-Bio, Science-Math, Commerce, Arts)
+   - `/senior/class/[12]` — class page (subjects, with entrance exam options)
+   - `/senior/exam/[slug]` — entrance exam detail (NEET/JEE: pattern, syllabus, PYQs)
+   - `/senior/practice/[type]` — practice pages (board-qna / neet-mcq / speed-drill / pyq)
+6. Implement hybrid-merge combined course engine (Edge Function).
+7. Demonstrate: Class 12 CBSE Bio + NEET → ONE combined course with:
+   - Concepts at NEET depth (L4)
+   - Board QNA practice sets
+   - NEET MCQ practice sets
+   - Both PYQs (board + NEET)
+   - Speed drills (timed MCQ)
+   - Daily plan balancing all dimensions
+8. Implement speed practice: timed MCQ sessions with accuracy + speed tracking.
+9. Implement board QNA practice: long-form answer writing with model answers.
+10. School → Senior transition demo: Class 10 NEET Foundation → Class 11 Senior (mastery carries over).
+
+**Deliverable:** Senior segment live. Student can enroll in Class 12 + NEET, get hybrid-merged combined course with board QNA + NEET MCQ + speed drills + PYQs. THE Senior killer feature.
+
+**Files created:**
+```
+supabase/seed/curriculum-senior.sql
+supabase/seed/exams-senior.sql  (NEET, JEE)
+supabase/seed/questions-senior.sql  (board QNA + NEET MCQ + PYQs)
+supabase/functions/generate-combined-course/hybrid-merge.ts
+app/senior/page.tsx
+app/senior/class/[n]/page.tsx
+app/senior/exam/[slug]/page.tsx
+app/senior/practice/[type]/page.tsx
+components/senior/stream-selector.tsx
+components/senior/hybrid-course-view.tsx
+components/senior/board-qna-practice.tsx
+components/senior/speed-drill.tsx
+lib/combined-course/hybrid-merge.ts
+```
 
 ---
 
@@ -1914,6 +2119,11 @@ snapzila-academy/
 │   │   │   │       ├── page.tsx
 │   │   │   │       └── [chapter]/
 │   │   │   │           └── page.tsx
+│   │   ├── senior/
+│   │   │   ├── page.tsx
+│   │   │   ├── class/[n]/
+│   │   │   ├── exam/[slug]/
+│   │   │   └── practice/[type]/
 │   │   ├── coaching/
 │   │   │   ├── page.tsx
 │   │   │   ├── exam/[slug]/

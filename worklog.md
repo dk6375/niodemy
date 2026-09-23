@@ -374,3 +374,76 @@ Stage Summary:
 - Teacher Dashboard placeholders ready for Session 6 (chat system) and live classes
 - GitHub: pushed to github.com/dk6375/niodemy (careeralertonline@gmail.com)
 - Next session: Session 6 — Unified Chat System (4 contexts: chapter doubt, live class, AI tutor, QNA) + Socket.io mini-service + AI integration
+
+---
+Task ID: 6
+Agent: Development Agent (Z.ai Code)
+Task: Session 6 — Unified Chat System (4 contexts: chapter doubt, live class, AI tutor, QNA).
+
+Work Log:
+- Database migration 010_chat.sql:
+  - chat_rooms (type: chapter_doubt/live_class/ai_tutor/qna, context_type, context_id, title)
+  - chat_messages (user_id, sender_type: user/teacher/ai/system, body, reply_to, is_pinned, is_best_answer, upvotes, ai_metadata)
+  - chat_reactions (message_id, user_id, reaction)
+  - RLS: public read, authenticated insert, owner update, teacher/admin pin/best-answer
+  - RPC function get_or_create_room (get-or-create pattern)
+- Socket.io mini-service (mini-services/chat-service/index.ts, port 3001):
+  - Loads .env.local from project root
+  - Events: join_room, send_message (persist + broadcast), typing, upvote, pin_message, best_answer
+  - Presence tracking (online count per room)
+  - Supabase service role client for message persistence
+  - Started in background (bun --hot for auto-restart)
+- Installed socket.io-client + socket.io packages
+- Unified ChatRoom component (src/components/chat/chat-room.tsx):
+  - ONE component, 4 modes: chapter_doubt, live_class, ai_tutor, qna
+  - Adapts UI based on mode (AI tutor = no socket, uses HTTP)
+  - Features: threaded replies, emoji reactions (upvote), pin (teacher), best answer (teacher), typing indicator, online count, reply preview, auto-scroll
+  - Sender avatars: user/teacher/ai/system with distinct colors
+  - Dev: connects directly to localhost:3001; Prod: uses gateway /?XTransformPort=3001
+- API routes:
+  - /api/chat/room (GET/POST): get-or-create room via RPC
+  - /api/chat/ai-tutor (POST): AI response using z-ai-web-dev-sdk
+    - Context-aware: fetches concept details if contextType=concept
+    - Personalization: includes user's active enrollments in system prompt
+    - Persists AI message to chat_messages with ai_metadata
+- Pages built:
+  - /my/chat: AI Tutor page (personal 1-on-1 with AI, room per user)
+  - /qna: QNA forum list (all questions with reply counts)
+  - /qna/new: ask new question form
+  - /qna/[id]: QNA thread with ChatRoom (qna mode)
+  - /concept/[slug]: embedded ChapterDoubtChat component (chapter_doubt mode)
+  - /teacher/doubts: live doubt queue (unanswered/answered sections, stats)
+- ChapterDoubtChat wrapper component: fetches room for concept, renders ChatRoom
+- AITutorChat wrapper: shows capabilities banner + ChatRoom
+- End-to-end testing (Agent Browser):
+  - Logged in as demo@niodemy.test
+  - /my/chat: AI Tutor working!
+    - Asked "What is photosynthesis in simple terms?"
+    - AI responded with detailed explanation (simple language, equation, Hindi/English mix)
+    - Message persisted to DB
+  - /concept/photosynthesis: Doubt Chat embedded at bottom
+    - Typed "Hello test message"
+    - Message sent + persisted (survived page reload)
+    - "demo" user shown as sender
+  - /qna/new: Asked "How to solve quadratic equations?"
+    - Created QNA room + posted question
+    - Redirected to /qna/[id] thread
+  - /qna: Question appears in list with "Asked 9/23/2026"
+  - /teacher/doubts: Live doubt queue working
+    - Stats: Total Doubt Rooms, Unanswered, Answered
+    - "Answered (1)" section shows Photosynthesis doubt room with 1 message
+- Lint: 0 errors
+
+Stage Summary:
+- Unified Chat System WORKING end-to-end
+- 4 chat contexts, ONE component:
+  1. Chapter Doubt Chat: embedded in /concept/[slug], real-time via Socket.io, persisted
+  2. AI Tutor: /my/chat, context-aware (knows concept + user goals), z-ai-web-dev-sdk
+  3. QNA Forum: /qna list + /qna/new + /qna/[id] threads
+  4. Live Class: placeholder ready (/teacher/live + /live/[id])
+- AI integration live: z-ai-web-dev-sdk responds with context-aware, personalized answers
+- Teacher Dashboard doubt queue live: shows all chapter doubt rooms, answered/unanswered sections
+- Real-time features: message broadcast, typing indicator, presence (online count), upvotes, pin, best answer
+- All messages persisted to Supabase (chat_messages table) with RLS
+- GitHub: pushed to github.com/dk6375/niodemy (careeralertonline@gmail.com)
+- Next session: Session 7 — School segment (Class 6-10 full build with curriculum, depth-merge demo)

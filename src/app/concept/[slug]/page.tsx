@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { QuestionPractice } from '@/components/learn/question-practice'
+import { ChapterDoubtChat } from '@/components/chat/chapter-doubt-chat'
 import ReactMarkdown from 'react-markdown'
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
@@ -165,6 +166,9 @@ export default async function ConceptPage({
               </p>
             </Card>
           )}
+
+          {/* Chapter Doubt Chat */}
+          <ChapterDoubtChat conceptId={concept.id} conceptTitle={concept.title} />
         </div>
 
         {/* Sidebar — Depth Layers */}

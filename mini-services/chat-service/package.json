@@ -1,0 +1,12 @@
+{
+  "name": "niodemy-chat-service",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "bun --hot index.ts"
+  },
+  "dependencies": {
+    "socket.io": "^4.8.1",
+    "@supabase/supabase-js": "^2.45.0"
+  }
+}

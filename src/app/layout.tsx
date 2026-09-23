@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import { SiteHeader } from "@/components/site/site-header";
+import { SiteFooter } from "@/components/site/site-footer";
+import { ThemeProvider } from "@/components/site/theme-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,24 +17,36 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Z.ai Code Scaffold - AI-Powered Development",
-  description: "Modern Next.js scaffold optimized for AI-powered development with Z.ai. Built with TypeScript, Tailwind CSS, and shadcn/ui.",
-  keywords: ["Z.ai", "Next.js", "TypeScript", "Tailwind CSS", "shadcn/ui", "AI development", "React"],
-  authors: [{ name: "Z.ai Team" }],
-  icons: {
-    icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
+  title: {
+    default: "Niodemy — Learn Anything, Anytime",
+    template: "%s — Niodemy",
   },
+  description:
+    "India's next-gen learning platform. School, Senior (NEET/JEE), Coaching, College, ITI, Skills, GK & Atlas — all in one place. Free to browse, structured to learn.",
+  keywords: [
+    "Niodemy",
+    "SnapZila Academy",
+    "NEET preparation",
+    "JEE preparation",
+    "SSC coaching",
+    "RRB coaching",
+    "NCERT solutions",
+    "GK current affairs",
+    "ITI learning",
+    "online learning India",
+  ],
+  authors: [{ name: "SnapZila Academy" }],
   openGraph: {
-    title: "Z.ai Code Scaffold",
-    description: "AI-powered development with modern React stack",
-    url: "https://chat.z.ai",
-    siteName: "Z.ai",
+    title: "Niodemy — Learn Anything, Anytime",
+    description:
+      "India's next-gen learning platform. 8 segments. Combined courses. AI tutor. Free to browse.",
     type: "website",
+    siteName: "Niodemy",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Z.ai Code Scaffold",
-    description: "AI-powered development with modern React stack",
+    title: "Niodemy — Learn Anything, Anytime",
+    description: "India's next-gen learning platform.",
   },
 };
 
@@ -43,10 +58,19 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground min-h-screen flex flex-col`}
       >
-        {children}
-        <Toaster />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <SiteHeader />
+          <main className="flex-1">{children}</main>
+          <SiteFooter />
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );

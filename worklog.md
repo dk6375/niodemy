@@ -225,3 +225,71 @@ Stage Summary:
 - Overlap stats show "72% common" style pitch (here: 2/2 common = 100%)
 - GitHub: pushed to github.com/dk6375/niodemy with careeralertonline@gmail.com email
 - Next session: Session 4 — Coaching segment + syllabus-merge combined course engine (exams schema, exam_concepts, RRB+SSC+Police multi-exam combined course)
+
+---
+Task ID: 4
+Agent: Development Agent (Z.ai Code)
+Task: Session 4 — Coaching segment + syllabus-merge combined course engine.
+
+Work Log:
+- Fixed all "Class 1" references across codebase + plan:
+  - Home page: "from Class 1 to Career" → "from Class 6 to Career"
+  - PLAN.md: Senior comparison "Class 1–10" → "Class 6–10"
+  - PLAN.md: "from Class 1 to career" → "from Class 6 to career"
+  - PLAN.md: URL structure "Class 1–10" → "Class 6–10"
+  - PLAN.md: Session 7 scope "Class 1–10" → "Class 6–10"
+- Database migration:
+  - 008_exams.sql: exams, exam_cycles, exam_concepts, related_exams tables (+ RLS: public read)
+- Seed data (003_exams_coaching.sql):
+  - 3 exams: RRB Group D (railway), SSC GD Constable (police), MP Police Constable (police)
+  - Full pattern_json (sections, questions, marks, duration, negative marking)
+  - Full eligibility_json (education, age, relaxation, nationality)
+  - Exam cycles for 2025
+  - exam_concepts mappings: 5 existing concepts mapped to all 3 exams at L2 depth
+  - related_exams: all 3 marked as "similar" to each other
+- Syllabus-merge combined course engine (src/lib/combined-course/syllabus-merge.ts):
+  - generateSyllabusMergeCombinedCourse(): takes userId + examIds
+  - Algorithm: fetch all exam_concepts → union by concept → take MAX depth + MAX importance → subtract mastered → sort by in_exams_count (common first)
+  - Computes overlap_stats: total, common_to_all, common_to_some, unique, per_exam, overlap_percent
+  - Saves to learning_paths table (cached)
+  - Helper functions: getAvailableExams(), getExamBySlug(), getExamConcepts()
+- Updated /api/combined-course route: handles both depth-merge (curriculum_ids) and syllabus-merge (exam_ids) via "mode" parameter
+- Coaching pages built:
+  - /coaching (updated): hero + combined course pitch card + exam directory grouped by category + features section
+  - /coaching/exam/[slug]: exam detail with pattern (4 stat cards), syllabus (concepts grouped by subject), eligibility sidebar, quick info sidebar, combined course CTA
+  - /coaching/combined: CombinedCourseGenerator component (client) + combined course result with overlap stats + per-exam breakdown + concept list
+- CombinedCourseGenerator component (client):
+  - Selectable exam cards (click to enroll/unenroll via /api/enroll)
+  - Category grouping
+  - "Generate Combined Course" button (disabled if <2 selected)
+  - Calls /api/combined-course with mode=syllabus-merge
+  - Toast notifications
+- End-to-end testing (Agent Browser):
+  - /coaching page: 3 exams shown grouped (Railway, Police), pattern badges (100 Qs, 90 min, NM)
+  - /coaching/exam/rrb-group-d: Exam Pattern (100 Qs, 100 marks, 90 min, -0.25 NM), 5 concepts in 3 subjects (General Science, General Awareness, Mathematics), Eligibility sidebar
+  - /coaching/combined (logged in as demo@niodemy.test):
+    - Selected all 3 exams (MP Police, SSC GD, RRB Group D)
+    - Clicked "Generate Combined Course"
+    - Result: "Syllabus-Merge Combined Course" with badge
+    - Overlap stats: Total 5, Common to all 4, Common to some 0, Unique 1
+    - Per-exam breakdown badges shown
+    - Combined Progress: 0/5 mastered (0%)
+    - 5 concepts listed:
+      - #1 Photosynthesis — "3 exams" badge, "Common to all" badge, Depth L2, per-exam subject mapping (RRB: General Science, SSC: General Science, MP: Science)
+      - #2 Newton's Laws of Motion — "3 exams", "Common to all", L2
+      - #3 Fundamental Rights — "3 exams", "Common to all", L2
+      - #4 Indian Parliament — "3 exams", "Common to all", L2
+      - #5 Pythagoras Theorem — "2 exams" (RRB + SSC only, NOT MP Police), L2 medium
+    - Each concept clickable → /concept/[slug]
+- VLM verified: "Combined Course Generator tool, Syllabus-Merge Combined Course stats (5 total, 4 common to all), progress bar 0%, 5 specific concepts listed"
+- Lint: 0 errors
+
+Stage Summary:
+- Syllabus-merge combined course engine WORKING end-to-end
+- User can: browse exams → view exam detail (pattern + syllabus + eligibility) → select multiple exams → generate ONE combined course
+- Overlap stats show the killer pitch: "5 concepts merged from 3 exams, 4 common to all — you don't need 3 separate courses!"
+- Per-exam subject mapping visible (e.g., Photosynthesis is "General Science" in RRB, "Science" in MP Police)
+- Concept #5 (Pythagoras) correctly shows "2 exams" (not in MP Police syllabus)
+- Both combined course engines now live: depth-merge (School) + syllabus-merge (Coaching)
+- GitHub: pushed to github.com/dk6375/niodemy (careeralertonline@gmail.com)
+- Next session: Session 5 — Console (content authoring + exam management + teacher dashboard)

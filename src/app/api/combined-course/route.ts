@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { generateDepthMergeCombinedCourse } from '@/lib/combined-course/depth-merge'
+import { generateSyllabusMergeCombinedCourse } from '@/lib/combined-course/syllabus-merge'
 
 /**
  * POST /api/combined-course
- * Body: { curriculum_ids: string[] }
- * Generates a depth-merge combined course for the current user.
+ * Body: { mode: 'depth-merge' | 'syllabus-merge', curriculum_ids?: string[], exam_ids?: string[] }
+ * Generates a combined course for the current user.
  */
 export async function POST(request: NextRequest) {
   const supabase = await createClient()
@@ -16,13 +17,27 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json()
-  const { curriculum_ids } = body
+  const { mode, curriculum_ids, exam_ids } = body
 
-  if (!Array.isArray(curriculum_ids) || curriculum_ids.length === 0) {
-    return NextResponse.json({ error: 'curriculum_ids array required' }, { status: 400 })
+  if (!mode) {
+    return NextResponse.json({ error: 'mode required (depth-merge or syllabus-merge)' }, { status: 400 })
   }
 
-  const result = await generateDepthMergeCombinedCourse(user.id, curriculum_ids)
+  let result = null
+
+  if (mode === 'depth-merge') {
+    if (!Array.isArray(curriculum_ids) || curriculum_ids.length === 0) {
+      return NextResponse.json({ error: 'curriculum_ids array required for depth-merge' }, { status: 400 })
+    }
+    result = await generateDepthMergeCombinedCourse(user.id, curriculum_ids)
+  } else if (mode === 'syllabus-merge') {
+    if (!Array.isArray(exam_ids) || exam_ids.length === 0) {
+      return NextResponse.json({ error: 'exam_ids array required for syllabus-merge' }, { status: 400 })
+    }
+    result = await generateSyllabusMergeCombinedCourse(user.id, exam_ids)
+  } else {
+    return NextResponse.json({ error: 'Invalid mode. Use depth-merge or syllabus-merge.' }, { status: 400 })
+  }
 
   if (!result) {
     return NextResponse.json({ error: 'Failed to generate combined course' }, { status: 500 })

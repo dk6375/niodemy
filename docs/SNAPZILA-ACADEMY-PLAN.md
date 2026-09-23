@@ -231,7 +231,7 @@ Combined course is the killer feature, but NOT every segment needs it. Here's th
 
 ```
 [domain].vercel.app/                    → Home (segment navigation + search)
-├── /school/                            → School home (Class 1–10)
+├── /school/                            → School home (Class 6–10)
 │   ├── /school/class/[class]/          → Class-specific page (e.g., /school/class/8/)
 │   ├── /school/class/[class]/[subject]/ → Subject page
 │   ├── /school/class/[class]/[subject]/[chapter]/ → Chapter page
@@ -341,7 +341,7 @@ Combined course:
 **Audience:** Class 11–12 students across streams (Science-Bio, Science-Math, Commerce, Arts) who are ALSO preparing for entrance exams (NEET, JEE Main, JEE Advanced, CUET) alongside their board exams.
 
 **Why Senior is a separate segment (not part of School):**
-Class 11–12 + NEET/JEE is fundamentally different from Class 1–10 + Olympiad:
+Class 11–12 + NEET/JEE is fundamentally different from Class 6–10 + Olympiad:
 1. **Dual intense goals:** Board exam (detailed written answers) + Entrance exam (speed MCQs) — both high-stakes.
 2. **Same syllabus, different demands:** NEET/JEE syllabus = NCERT Class 11–12 syllabus. Same concepts, but NEET needs DEPTH + SPEED + PYQ practice, while board needs DETAILED QNA + long-form answers.
 3. **Different practice modes:** Board = long-answer writing practice; NEET = timed MCQ drills (180 Qs in 180 min).
@@ -1627,7 +1627,7 @@ Font: Inter (UI) + a serif or dyslexia-friendly option for content reading.
 2. **Senior Hybrid-Merge (Board + NEET/JEE in ONE course)** — Allen Kota does this offline at ₹1L+/year. We do it online, free, with AI personalization. THE Senior differentiator.
 3. **Speed + Detail Dual Practice** — No platform offers both timed speed drills (for entrance) AND detailed long-form QNA practice (for boards) in one system. We do.
 4. **Depth-Layered Content** — Same concept, different depth for different goals. No duplicate content. Allen Kota does this offline; nobody does it online at scale.
-5. **Cross-Segment Mastery Portability** — Mastered Photosynthesis in Class 8? It counts toward NEET Foundation → Class 11 Senior → NEET. One continuous mastery journey from Class 1 to career. No platform tracks this.
+5. **Cross-Segment Mastery Portability** — Mastered Photosynthesis in Class 8? It counts toward NEET Foundation → Class 11 Senior → NEET. One continuous mastery journey from Class 6 to career. No platform tracks this.
 6. **Exam-Centric GK** — GK personalized to exam level. All competitors publish one-size-fits-all GK.
 7. **Unified Chat (Doubt + AI + Live + QNA)** — Most platforms have separate systems. We have one.
 8. **W3Schools-Style Free Access + Structured Enrollment** — Most Indian edtech locks content behind paywalls. We're free to browse, structured if enrolled.
@@ -1962,13 +1962,13 @@ lib/ai/tutor.ts
 
 ### Session 7: School Segment
 
-**Objective:** School segment functional for Class 8, 10 (Class 1–10 scope).
+**Objective:** School segment functional for Class 8, 10 (Class 6–10 scope).
 
 **Tasks:**
 1. Seed curriculum data: CBSE Class 8, 10 (Science, Math, Social Science).
 2. Seed ~40 concepts per class, mapped to curriculums with depth levels.
 3. Build school pages:
-   - `/school` — school home (class selector, Class 1–10)
+   - `/school` — school home (class selector, Class 6–10)
    - `/school/class/[n]` — class page (subjects list)
    - `/school/class/[n]/[subject]` — subject page (chapters)
    - `/school/class/[n]/[subject]/[chapter]` — chapter page (concepts list + content)

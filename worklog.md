@@ -447,3 +447,50 @@ Stage Summary:
 - All messages persisted to Supabase (chat_messages table) with RLS
 - GitHub: pushed to github.com/dk6375/niodemy (careeralertonline@gmail.com)
 - Next session: Session 7 — School segment (Class 6-10 full build with curriculum, depth-merge demo)
+
+---
+Task ID: 7
+Agent: Development Agent (Z.ai Code)
+Task: Session 7 — School segment (Class 6-10) full build.
+
+Work Log:
+- Restored .env.local (was missing — recreated with all credentials)
+- Database seed (004_school_curriculum.sql):
+  - Added Classes 6, 7, 9, 10 (Class 8 already existed)
+  - Added 6 new concepts: Human Heart (Biology), Motion (Physics), Light Reflection (Physics), Number System (Math), Climate (Geography), Mughal Empire (History)
+  - Created 14 curriculums across all classes: Class 6 (Science, Math), Class 7 (Science, Social Science), Class 8 (Science, Math, Social Science, NEET Foundation), Class 9 (Science, Math, Social Science), Class 10 (Science, Math, Social Science)
+  - Mapped all concepts to curriculums at appropriate depths:
+    - Class 6: L1 (basic awareness)
+    - Class 7: L1 (basic)
+    - Class 8: L2 (exam facts)
+    - Class 9: L2 (exam facts)
+    - Class 10: L2-L3 (exam facts + conceptual)
+    - NEET Foundation: L3 (deeper)
+  - Total: 5 classes, 14 curriculums, 11 concepts, ~30 curriculum_concept mappings
+- Education query helpers (src/lib/queries/education.ts):
+  - getSchoolClasses(): all Class 6-10 with board info
+  - getClassByLevel(level): single class by level (6, 7, 8, 9, 10)
+  - getCurriculumsForClass(classId): subjects for a class
+  - getCurriculumConceptsGrouped(curriculumId): concepts grouped by chapter
+  - getCurriculumById(id): single curriculum with class + board info
+- Pages built:
+  - /school (updated): class selector (6-10) + goal options (School Exam, NEET/JEE Foundation, Scholarships, Olympiads) + combined course CTA
+  - /school/class/[level]: class page with subject list (subject icons, Foundation badge, board/year badges)
+  - /school/curriculum/[id]: curriculum page with chapters grouped + concepts list (depth, importance badges) + enroll sidebar (EnrollButton, Foundation info, depth guide)
+- End-to-end testing (Agent Browser):
+  - /school: 5 class cards (6, 7, 8, 9, 10), 4 goal options, combined course CTA
+  - /school/class/8: 4 subjects (Mathematics, NEET Foundation Science, Science, Social Science) with Foundation badge on NEET
+  - /school/curriculum/[id]: Class 8 Science with 2 chapters (Crop Production and Management, Force and Pressure), 2 concepts (Photosynthesis L2 high, Newton's Laws L2 high), Enroll button in sidebar, depth guide
+  - VLM verified: "Clean & modern UI, mobile-first layout, contextual selectors and goals"
+- Lint: 0 errors
+
+Stage Summary:
+- School segment fully built for Class 6-10
+- Navigation: /school → class selector → /school/class/[level] → subjects → /school/curriculum/[id] → chapters → concepts → /concept/[slug]
+- All concepts mapped at appropriate depths per class (L1 for Class 6-7, L2 for Class 8-9, L3 for Class 10)
+- NEET Foundation curriculum shows "Foundation" badge and deeper depth (L3)
+- EnrollButton on curriculum pages — users can enroll directly from subject view
+- Combined course CTA shown when 2+ subjects available in a class
+- Goal options clearly displayed: School Exam, NEET/JEE Foundation, Scholarships, Olympiads
+- GitHub: pushed to github.com/dk6375/niodemy (careeralertonline@gmail.com)
+- Next session: Session 8 — Atlas (Books Solutions) + SEO optimization

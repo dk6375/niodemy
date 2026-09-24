@@ -767,3 +767,34 @@ Stage Summary:
 - Navigation: /college → degree → semesters → subjects
 - W3Schools-style free browsing (no login to view)
 - GitHub: pushed to github.com/dk6375/niodemy (careeralertonline@gmail.com)
+
+---
+Task ID: 12
+Agent: Development Agent (Z.ai Code)
+Task: Session 12 — ITI segment (trades, modules, workshop structure).
+
+Work Log:
+- Database migration 014_iti.sql:
+  - iti_trades (slug, name, code, duration_years, nco_code, description, career_opportunities, seo_json)
+  - iti_modules (trade_id, semester_number, module_number, title, description, module_type, duration_hours, concept_ids)
+  - RLS: public read
+- Seed data (009_iti.sql):
+  - 3 trades: Electrician (2yr), Fitter (2yr), COPA (1yr)
+  - 15 modules across trades:
+    - Electrician: 7 modules (Sem 1: Safety, Hand Tools, Basic Electrical, Wiring Workshop; Sem 2: DC Machines, Transformers, AC Machines Lab)
+    - Fitter: 4 modules (Workshop Safety, Bench Tools, Marking & Measurement, Fitting Practice)
+    - COPA: 4 modules (Computer Fundamentals, OS Windows, MS Office, Internet & Data Entry)
+  - Module types: theory, practical, workshop, safety, project
+- ITI query helpers (src/lib/queries/iti.ts): getItiTrades, getItiTradeBySlug, getItiModules
+- Pages built:
+  - /iti: trade list + features (Module Notes, Safety Protocols, Career Paths)
+  - /iti/trade/[slug]: trade detail with career opportunities + modules grouped by semester (with type icons + duration hours)
+- End-to-end tested: /iti (3 trades), /iti/trade/electrician (200)
+- Lint: 0 errors
+
+Stage Summary:
+- ITI segment live — trade/module/vocational structure
+- 3 trades, 15 modules seeded
+- Module types: theory, practical, workshop, safety, project (with distinct icons/colors)
+- Career opportunities shown per trade
+- GitHub: pushed to github.com/dk6375/niodemy (careeralertonline@gmail.com)

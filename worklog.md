@@ -829,3 +829,36 @@ Stage Summary:
 - Free browsing (no login required)
 - Module navigation: prev/next + sidebar list
 - GitHub: pushed to github.com/dk6375/niodemy (careeralertonline@gmail.com)
+
+---
+Task ID: 14
+Agent: Development Agent (Z.ai Code)
+Task: Session 14 — Live classes (YouTube streaming + group chat).
+
+Work Log:
+- Database migration 016_live_classes.sql:
+  - live_classes (slug, title, teacher_id, teacher_name, youtube_video_id, youtube_url, scheduled_at, duration_minutes, status, segment, subject, chat_room_id)
+  - Status: scheduled / live / ended / cancelled
+  - RLS: public read, teachers/admins can CRUD
+- Seed data (011_live_classes.sql):
+  - 4 live classes: Photosynthesis Deep Dive (NEET), RRB Group D Math Crash Course, Class 10 Light Mastery, Python Basics Live Workshop
+  - Across segments: senior, coaching, school, skills
+  - Sample YouTube video IDs
+- Live query helpers (src/lib/queries/live.ts): getUpcomingLiveClasses, getPastLiveClasses, getLiveClassBySlug (by id or slug)
+- Pages built:
+  - /live: upcoming + past recordings list with LIVE NOW badge, teacher, schedule, duration, segment
+  - /live/[id]: live class detail with:
+    - YouTube embed (iframe, autoplay if live)
+    - Class info (teacher, scheduled date, duration, status)
+    - Live group chat (using existing ChatRoom component in live_class mode)
+- Updated site header: added "Live" link
+- End-to-end tested: /live (4 classes shown), /live/[id] (200 with YouTube embed)
+- Lint: 0 errors
+
+Stage Summary:
+- Live classes segment live — YouTube streaming + group chat
+- 4 sample live classes seeded across segments (School, Senior, Coaching, Skills)
+- YouTube embed works (iframe with autoplay for live classes)
+- Group chat integrated (uses existing unified ChatRoom in live_class mode)
+- All 14 sessions complete!
+- GitHub: pushed to github.com/dk6375/niodemy (careeralertonline@gmail.com)

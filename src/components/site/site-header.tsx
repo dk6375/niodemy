@@ -23,6 +23,7 @@ const segments = [
   { name: 'Skills', href: '/skills', desc: 'Coding, Excel...' },
   { name: 'GK', href: '/gk', desc: 'Current Affairs' },
   { name: 'Atlas', href: '/atlas', desc: 'Books Solutions' },
+  { name: 'Live', href: '/live', desc: 'Live Classes' },
   { name: 'Concepts', href: '/concepts', desc: 'Browse all concepts' },
 ]
 

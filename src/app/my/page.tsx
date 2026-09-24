@@ -30,6 +30,23 @@ export default async function MyDashboard() {
   const enrollments = await getUserEnrollments(user.id)
   const summary = await getUserProgressSummary(user.id)
 
+  // Group enrollments by segment (cross-segment view)
+  const segmentGroups: Record<string, any[]> = {}
+  for (const e of enrollments) {
+    const seg = (e as any).segment
+    if (!segmentGroups[seg]) segmentGroups[seg] = []
+    segmentGroups[seg].push(e)
+  }
+
+  const segmentLabels: Record<string, string> = {
+    school: 'School (Class 6–10)',
+    senior: 'Senior (Class 11–12)',
+    coaching: 'Coaching',
+    college: 'College',
+    iti: 'ITI',
+    skills: 'Skills',
+  }
+
   const stats = [
     { label: 'Active Goals', value: enrollments.length, icon: Target },
     { label: 'Concepts Mastered', value: summary.mastered, icon: CheckCircle2 },
@@ -41,7 +58,7 @@ export default async function MyDashboard() {
     { label: 'My Goals', href: '/my/goals', icon: Target, desc: 'Manage your learning goals' },
     { label: 'My Path', href: '/my/path', icon: BookOpen, desc: 'Current combined course' },
     { label: 'AI Tutor', href: '/my/chat', icon: MessageSquare, desc: 'Ask your personal AI tutor' },
-    { label: 'Bookmarks', href: '/my/bookmarks', icon: Bookmark, desc: 'Saved content' },
+    { label: 'Search', href: '/search', icon: Sparkles, desc: 'Find anything across platform' },
   ]
 
   return (
@@ -95,27 +112,35 @@ export default async function MyDashboard() {
         })}
       </div>
 
-      {/* Active Goals */}
+      {/* Active Goals — grouped by segment */}
       <h2 className="mb-4 mt-8 text-lg font-semibold">Active Goals ({enrollments.length})</h2>
       {enrollments.length > 0 ? (
-        <div className="space-y-3">
-          {enrollments.map((e: any) => (
-            <Card key={e.id} className="p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                    <Target className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <p className="font-semibold">{e.target_name || e.target_id}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {e.segment} · {e.target_type} · Priority {e.priority}
-                    </p>
-                  </div>
-                </div>
-                <Badge variant="secondary">{e.status}</Badge>
+        <div className="space-y-6">
+          {Object.entries(segmentGroups).map(([segment, segEnrollments]) => (
+            <div key={segment}>
+              <div className="mb-3 flex items-center gap-2">
+                <Badge variant="secondary" className="capitalize">{segmentLabels[segment] || segment}</Badge>
+                <span className="text-xs text-muted-foreground">{segEnrollments.length} {segEnrollments.length === 1 ? 'goal' : 'goals'}</span>
               </div>
-            </Card>
+              <div className="space-y-2">
+                {segEnrollments.map((e: any) => (
+                  <Card key={e.id} className="flex items-center justify-between p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                        <Target className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <p className="font-semibold">{e.target_name || e.target_id}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {e.target_type} · Priority {e.priority} · Enrolled {new Date(e.enrolled_at).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+                    <Badge variant={e.status === 'active' ? 'default' : 'secondary'} className="text-xs capitalize">{e.status}</Badge>
+                  </Card>
+                ))}
+              </div>
+            </div>
           ))}
         </div>
       ) : (

@@ -59,12 +59,15 @@ export function SiteHeader() {
         {/* Right Actions */}
         <div className="flex items-center gap-1.5 sm:gap-2">
           <Button
+            asChild
             variant="ghost"
             size="icon"
             className="h-9 w-9"
             aria-label="Search"
           >
-            <Search className="h-4 w-4" />
+            <Link href="/search">
+              <Search className="h-4 w-4" />
+            </Link>
           </Button>
           <Button
             variant="ghost"

@@ -604,3 +604,62 @@ Stage Summary:
 - SEO: JSON-LD (NewsArticle + BreadcrumbList), sitemap integration
 - GitHub: pushed to github.com/dk6375/niodemy (careeralertonline@gmail.com)
 - Next session: Session 10 — Cross-segment integration + unified search + polish
+
+---
+Task ID: 10
+Agent: Development Agent (Z.ai Code)
+Task: Session 10 — Cross-segment integration + unified search + polish.
+
+Work Log:
+- Unified search API (src/app/api/search/route.ts):
+  - GET /api/search?q=query
+  - Searches across 5 entity types in parallel:
+    1. Concepts (title, summary, subject)
+    2. Content assets (title, body_md)
+    3. Questions (body, subject)
+    4. GK current events (title, summary, body_md)
+    5. Atlas books (title, description, subject)
+  - Returns results grouped by type with total count
+  - Uses Supabase ilike for case-insensitive search
+- Search page (/search):
+  - SearchClient component with live search (client-side fetch)
+  - Results grouped by type with icons + color coding:
+    - Concepts (purple), Content (blue), Questions (emerald), GK (amber), Books (cyan)
+  - Each result: title, badges (subject, category, type, difficulty, class)
+  - Search suggestions when no query (photosynthesis, pythagoras, etc.)
+  - Loading state with spinner
+  - Empty state with suggestions
+  - No results state
+- Header search button wired: now navigates to /search
+- /my dashboard polish:
+  - Active Goals now grouped by segment (School, Coaching, etc.)
+  - Each segment shows goal count + list with target_name, type, priority, enrollment date
+  - "Search" added to Quick Access links
+  - Combined Course CTA shown when 2+ enrollments
+- End-to-end testing (Agent Browser):
+  - /search?q=photo: 6 results — Concepts (1: Photosynthesis), Content (1: Lesson), Questions (4: MCQs with D1/D2/D3 badges)
+  - /search?q=class 10: Atlas Books results — NCERT Science Class 10, NCERT Mathematics Class 10
+  - Header search button → /search page
+  - /my dashboard: 5 Active Goals with segment grouping, Combined Course CTA, Search in Quick Access
+  - VLM verified: "Active goals list categorized by segments (Coaching and School), Search quick-access card"
+- Lint: 0 errors
+
+Stage Summary:
+- Unified search WORKING across 5 entity types: concepts, content, questions, GK events, Atlas books
+- Search page: live search with grouped results, suggestions, loading/empty states
+- Header search button wired to /search
+- /my dashboard polished: segment-wise goal grouping, Search in Quick Access
+- Cross-segment integration: one search, one dashboard, all segments
+- All 10 sessions complete:
+  1. Project setup + auth + design system
+  2. Core data models + W3Schools-style public browsing
+  3. Learner dashboard + depth-merge combined course engine
+  4. Coaching segment + syllabus-merge combined course engine
+  5. Console (internal mgmt) + Teacher Dashboard (separate)
+  6. Unified Chat System (4 contexts: doubt, live, AI tutor, QNA)
+  7. School segment (Class 6-10) full build
+  8. Atlas (Books Solutions) + SEO
+  9. GK & Current Affairs (content-first, exam-centric)
+  10. Cross-segment integration + unified search + polish
+- GitHub: pushed to github.com/dk6375/niodemy (careeralertonline@gmail.com)
+- Platform ready for Vercel deployment + testing

@@ -663,3 +663,42 @@ Stage Summary:
   10. Cross-segment integration + unified search + polish
 - GitHub: pushed to github.com/dk6375/niodemy (careeralertonline@gmail.com)
 - Platform ready for Vercel deployment + testing
+
+---
+Task ID: 7b
+Agent: Development Agent (Z.ai Code)
+Task: Session 7b (gap fill) — Senior segment (Class 11-12 + NEET/JEE) + hybrid-merge engine.
+
+Work Log:
+- Gap identified: Session 7b was skipped in earlier work (Senior segment with hybrid-merge engine)
+- Database seed (007_senior_segment.sql):
+  - Added Classes 11, 12 (senior segment)
+  - 5 new concepts: Human Reproduction, Genetics, Electrostatics, Organic Chemistry Basics, Calculus
+  - 8 curriculums: Class 11 + Class 12 (Physics, Chemistry, Biology, Mathematics each)
+  - Curriculum-concept mappings at board depth (L2-L3)
+  - 2 entrance exams: NEET (UG), JEE Main
+  - Exam cycles for 2025
+  - exam_concepts mappings at entrance depth (L4) for NEET/JEE
+  - 7 sample questions: 2 board QNA (long-form, short-form), 5 entrance MCQs (NEET + JEE PYQs)
+- Hybrid-merge combined course engine (src/lib/combined-course/hybrid-merge.ts):
+  - generateHybridMergeCombinedCourse(userId, curriculumId, examIds)
+  - Algorithm: union board + entrance concepts → depth = MAX → assemble practice layers → compute hybrid daily plan
+  - Returns: concepts with board_depth/entrance_depth/target_depth, practice_layers (board_qna, entrance_mcq, board_pyqs, entrance_pyqs, speed_drills), daily_plan (balanced across 5 dimensions)
+- Updated /api/combined-course route: handles 3 modes (depth-merge, syllabus-merge, hybrid-merge)
+- Senior pages built:
+  - /senior: home with class selector + entrance exam directory + hybrid-merge pitch
+  - /senior/class/[level]: class page with board subjects + entrance exam links
+  - /senior/exam/[slug]: exam detail with pattern, syllabus (grouped by subject), eligibility, hybrid-merge CTA
+  - /senior/combined: hybrid combined course view with practice layers + daily plan + concepts list
+- End-to-end testing (Agent Browser):
+  - /senior: 2 classes (11, 12), 2 entrance exams (NEET, JEE), hybrid-merge pitch
+  - /senior/exam/neet: pattern (200 Qs, 720 marks, 200 min), syllabus (5 concepts: Biology L4, Physics L2-L3), eligibility, official link, hybrid CTA
+- Lint: 0 errors
+
+Stage Summary:
+- Senior segment fully built — Class 11-12 + NEET/JEE
+- Hybrid-merge engine working: combines board curriculum + entrance exam into ONE course
+- Practice layers: board QNA + entrance MCQ + board PYQs + entrance PYQs + speed drills
+- Daily plan: balanced across 5 dimensions (learn + board practice + entrance practice + speed + revision)
+- 3 combined course engines now live: depth-merge (School), syllabus-merge (Coaching), hybrid-merge (Senior)
+- GitHub: pushed to github.com/dk6375/niodemy (careeralertonline@gmail.com)

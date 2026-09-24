@@ -2,10 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { generateDepthMergeCombinedCourse } from '@/lib/combined-course/depth-merge'
 import { generateSyllabusMergeCombinedCourse } from '@/lib/combined-course/syllabus-merge'
+import { generateHybridMergeCombinedCourse } from '@/lib/combined-course/hybrid-merge'
 
 /**
  * POST /api/combined-course
- * Body: { mode: 'depth-merge' | 'syllabus-merge', curriculum_ids?: string[], exam_ids?: string[] }
+ * Body: { mode: 'depth-merge' | 'syllabus-merge' | 'hybrid-merge', curriculum_ids?, exam_ids? }
  * Generates a combined course for the current user.
  */
 export async function POST(request: NextRequest) {
@@ -20,7 +21,7 @@ export async function POST(request: NextRequest) {
   const { mode, curriculum_ids, exam_ids } = body
 
   if (!mode) {
-    return NextResponse.json({ error: 'mode required (depth-merge or syllabus-merge)' }, { status: 400 })
+    return NextResponse.json({ error: 'mode required (depth-merge, syllabus-merge, or hybrid-merge)' }, { status: 400 })
   }
 
   let result = null
@@ -35,8 +36,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'exam_ids array required for syllabus-merge' }, { status: 400 })
     }
     result = await generateSyllabusMergeCombinedCourse(user.id, exam_ids)
+  } else if (mode === 'hybrid-merge') {
+    if (!curriculum_ids || !Array.isArray(curriculum_ids) || curriculum_ids.length === 0) {
+      return NextResponse.json({ error: 'curriculum_ids array required for hybrid-merge' }, { status: 400 })
+    }
+    // curriculum_ids[0] is the board curriculum; exam_ids are entrance exams
+    result = await generateHybridMergeCombinedCourse(user.id, curriculum_ids[0], exam_ids || [])
   } else {
-    return NextResponse.json({ error: 'Invalid mode. Use depth-merge or syllabus-merge.' }, { status: 400 })
+    return NextResponse.json({ error: 'Invalid mode. Use depth-merge, syllabus-merge, or hybrid-merge.' }, { status: 400 })
   }
 
   if (!result) {

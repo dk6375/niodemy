@@ -91,6 +91,87 @@ io.on('connection', (socket) => {
 
       // Broadcast to all in room
       io.to(roomId).emit('new_message', data)
+
+      // If this is a chapter_doubt room, trigger AI auto-reply after 30s
+      // (only if no teacher responds)
+      if (senderType === 'user' && body.length > 5) {
+        // Get room type to check if it's chapter_doubt
+        const { data: room } = await supabase
+          .from('chat_rooms')
+          .select('type, context_type, context_id')
+          .eq('id', roomId)
+          .single()
+
+        if (room && room.type === 'chapter_doubt') {
+          // Schedule AI auto-reply (non-blocking, after 30s)
+          setTimeout(async () => {
+            try {
+              // Check if teacher already responded
+              const { data: teacherReplies } = await supabase
+                .from('chat_messages')
+                .select('id')
+                .eq('room_id', roomId)
+                .eq('sender_type', 'teacher')
+                .limit(1)
+
+              if (teacherReplies && teacherReplies.length > 0) {
+                return // Teacher already responded
+              }
+
+              // Generate AI response
+              const conceptId = room.context_id
+              let systemContext = ''
+              if (room.context_type === 'concept' && conceptId) {
+                const { data: concept } = await supabase
+                  .from('concepts')
+                  .select('title, subject, summary, content_json')
+                  .eq('id', conceptId)
+                  .single()
+                if (concept) {
+                  systemContext = `\n\nStudent is studying: ${concept.title} (${concept.subject}). Summary: ${concept.summary || 'N/A'}`
+                }
+              }
+
+              // Use ZAI SDK for doubt response
+              const ZAI = (await import('z-ai-web-dev-sdk')).default
+              const zai = await ZAI.create()
+              const response = await zai.chat.completions.create({
+                messages: [
+                  {
+                    role: 'system',
+                    content: `You are Niodemy's AI Doubt Assistant. Help the student understand clearly. Be concise, encouraging, explain in simple language (mix Hindi/English if needed).${systemContext}`,
+                  },
+                  { role: 'user', content: body },
+                ],
+                thinking: { type: 'disabled' },
+              })
+
+              const aiReply = response.choices[0]?.message?.content || 'Sorry, I could not generate a response.'
+
+              // Insert AI response
+              const { data: aiMsg } = await supabase
+                .from('chat_messages')
+                .insert({
+                  room_id: roomId,
+                  user_id: null,
+                  sender_type: 'ai',
+                  sender_name: 'AI Assistant',
+                  body: aiReply,
+                  ai_metadata: { model: 'z-ai-doubt', auto_reply: true },
+                })
+                .select()
+                .single()
+
+              if (aiMsg) {
+                io.to(roomId).emit('new_message', aiMsg)
+                console.log(`[chat] AI auto-replied in room ${roomId}`)
+              }
+            } catch (e) {
+              console.error('[chat] AI auto-reply error:', e)
+            }
+          }, 30000) // 30 second delay
+        }
+      }
     } catch (e: any) {
       console.error('[chat] send_message error:', e.message)
     }

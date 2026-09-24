@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
 import { ThemeProvider } from "@/components/site/theme-provider";
+import { MobileBottomNav } from "@/components/site/mobile-bottom-nav";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -67,8 +68,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <SiteHeader />
-          <main className="flex-1">{children}</main>
+          <main className="flex-1 pb-16 lg:pb-0">{children}</main>
           <SiteFooter />
+          <MobileBottomNav />
           <Toaster />
         </ThemeProvider>
       </body>

@@ -1,7 +1,8 @@
 import Link from 'next/link'
-import { GraduationCap } from 'lucide-react'
+import { GraduationCap, Plus } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/server'
 
 export const metadata = { title: 'Exams — Console' }
@@ -19,11 +20,19 @@ export default async function ExamsPage() {
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold">Exams</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Manage competitive exams, syllabus, patterns, eligibility.
-        </p>
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Exams</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Manage competitive exams, syllabus, patterns, eligibility.
+          </p>
+        </div>
+        <Button asChild>
+          <Link href="/console/exams/new">
+            <Plus className="mr-1.5 h-4 w-4" />
+            New Exam
+          </Link>
+        </Button>
       </div>
 
       {exams && exams.length > 0 ? (

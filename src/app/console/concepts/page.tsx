@@ -24,6 +24,12 @@ export default async function ConceptsPage() {
             Manage the knowledge graph — atomic knowledge units.
           </p>
         </div>
+        <Button asChild>
+          <Link href="/console/concepts/new">
+            <Plus className="mr-1.5 h-4 w-4" />
+            New Concept
+          </Link>
+        </Button>
       </div>
 
       {concepts && concepts.length > 0 ? (

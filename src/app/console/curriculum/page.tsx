@@ -1,5 +1,7 @@
-import { BookOpen } from 'lucide-react'
+import Link from 'next/link'
+import { BookOpen, Plus } from 'lucide-react'
 import { Card } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/server'
 
 export const metadata = { title: 'Curriculum — Console' }
@@ -16,11 +18,19 @@ export default async function CurriculumPage() {
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold">Curriculum</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Manage boards, classes, subjects, and concept mappings.
-        </p>
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Curriculum</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Manage boards, classes, subjects, and concept mappings.
+          </p>
+        </div>
+        <Button asChild>
+          <Link href="/console/curriculum/new">
+            <Plus className="mr-1.5 h-4 w-4" />
+            New Curriculum
+          </Link>
+        </Button>
       </div>
 
       {curriculums && curriculums.length > 0 ? (

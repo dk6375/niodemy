@@ -2,12 +2,38 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, BookOpen, HelpCircle, FileText, ChevronRight } from 'lucide-react'
 import { getConceptBySlug, getContentForConcept, getQuestionsForConcept } from '@/lib/queries/concepts'
+import { createClient } from '@/lib/supabase/server'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { QuestionPractice } from '@/components/learn/question-practice'
 import { ChapterDoubtChat } from '@/components/chat/chapter-doubt-chat'
+import { ProgressTracker } from '@/components/learn/progress-tracker'
 import ReactMarkdown from 'react-markdown'
+
+async function ProgressTrackerWrapper({ conceptId }: { conceptId: string }) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return null
+
+  const { data: progress } = await supabase
+    .from('progress')
+    .select('mastery, status')
+    .eq('user_id', user.id)
+    .eq('concept_id', conceptId)
+    .single()
+
+  return (
+    <Card className="p-4">
+      <ProgressTracker
+        conceptId={conceptId}
+        userId={user.id}
+        initialMastery={progress?.mastery}
+        initialStatus={progress?.status}
+      />
+    </Card>
+  )
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
@@ -171,7 +197,7 @@ export default async function ConceptPage({
           <ChapterDoubtChat conceptId={concept.id} conceptTitle={concept.title} />
         </div>
 
-        {/* Sidebar — Depth Layers */}
+        {/* Sidebar — Depth Layers + Progress */}
         <div className="lg:col-span-1">
           <Card className="sticky top-20 p-5">
             <div className="mb-3 flex items-center gap-2">
@@ -202,6 +228,9 @@ export default async function ConceptPage({
               </ul>
             </div>
           </Card>
+
+          {/* Progress tracker (for logged in users) */}
+          <ProgressTrackerWrapper conceptId={concept.id} />
         </div>
       </div>
 

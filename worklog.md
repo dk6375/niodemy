@@ -733,3 +733,37 @@ Stage Summary:
 - Audit logging on all question changes
 - Console now complete: content editor + question editor + management pages
 - GitHub: pushed to github.com/dk6375/niodemy (careeralertonline@gmail.com)
+
+---
+Task ID: 11
+Agent: Development Agent (Z.ai Code)
+Task: Session 11 — College segment (degree/semester/subjects structure).
+
+Work Log:
+- Database migration 013_college.sql:
+  - degrees (slug, name, short_name, level, duration_years, total_semesters, field, seo_json)
+  - semesters (degree_id, semester_number, year, title)
+  - semester_subjects (semester_id, subject_code, subject_name, credits, subject_type, concept_ids)
+  - RLS: public read
+- Seed data (008_college.sql):
+  - 3 degrees: B.Tech CSE (4yr/8sem), B.Sc CS (3yr/6sem), B.Com (3yr/6sem)
+  - 8 semesters (6 for B.Tech CSE, 2 for B.Sc CS)
+  - 12 semester subjects: DSA, DBMS, OOP Java, Eng Math III, DSA Lab, OS, Networks, SE, TOC (B.Tech CSE); Intro to Programming C, Math I, Physics I (B.Sc CS)
+  - Subject types: core, lab, elective, project, seminar
+- College query helpers (src/lib/queries/college.ts):
+  - getDegrees, getDegreeBySlug, getSemestersForDegree, getSemesterSubjects, getSemesterByDegree
+- Pages built:
+  - /college: degree list grouped by level (undergraduate, postgraduate, diploma) + features (Semester Notes, Placement Prep, PYQs)
+  - /college/degree/[slug]: degree detail with semester list (numbered cards)
+  - /college/degree/[slug]/semester/[n]: semester page with subjects grid (subject type icons, credits, code)
+- End-to-end testing (Agent Browser):
+  - /college: 3 degrees shown (B.Sc CS, B.Tech CSE, B.Com) with duration/field/semesters
+  - Features section: Semester Notes, Placement Prep, PYQs
+- Lint: 0 errors
+
+Stage Summary:
+- College segment live — degree/semester/subject structure
+- 3 degrees, 8 semesters, 12 subjects seeded
+- Navigation: /college → degree → semesters → subjects
+- W3Schools-style free browsing (no login to view)
+- GitHub: pushed to github.com/dk6375/niodemy (careeralertonline@gmail.com)

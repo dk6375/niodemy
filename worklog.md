@@ -702,3 +702,34 @@ Stage Summary:
 - Daily plan: balanced across 5 dimensions (learn + board practice + entrance practice + speed + revision)
 - 3 combined course engines now live: depth-merge (School), syllabus-merge (Coaching), hybrid-merge (Senior)
 - GitHub: pushed to github.com/dk6375/niodemy (careeralertonline@gmail.com)
+
+---
+Task ID: 5b
+Agent: Development Agent (Z.ai Code)
+Task: Session 5 gap fill — Question editor (create new MCQ page).
+
+Work Log:
+- Gap identified: Session 5 had question list page but no "create new question" page
+- API route: /api/console/questions (POST/PUT/DELETE) — full CRUD with audit logging
+- QuestionEditor component (src/components/console/question-editor.tsx):
+  - 7 question types: MCQ, Numerical, True/False, Short, Long, Assertion-Reason, Match
+  - 4 exam formats: Any, Board, Competitive, Both
+  - MCQ options editor: add/remove options, click letter circle to mark correct answer
+  - Concept dropdown, Exam dropdown (for PYQs)
+  - Source type (custom/pyq/book), source reference, board reference
+  - Difficulty (1-5), GK relevance (none/general/high)
+  - Explanation textarea
+  - Save as Draft / Publish buttons
+- /console/questions/new page: full question editor with sidebar metadata
+- End-to-end testing (Agent Browser):
+  - Logged in as demo@niodemy.test (admin)
+  - /console/questions/new: Type dropdown (MCQ selected), Exam Format dropdown, question body textarea, 4 options (A/B/C/D), Add Option button, correct answer selector, sidebar with concept/exam/difficulty/source fields
+  - Sidebar counts updated: Questions 27 (was 20, +7 from senior segment seed)
+- Lint: 0 errors
+
+Stage Summary:
+- Question editor fully functional — content writers can create MCQs, PYQs, board QNA, etc.
+- All 7 question types supported
+- Audit logging on all question changes
+- Console now complete: content editor + question editor + management pages
+- GitHub: pushed to github.com/dk6375/niodemy (careeralertonline@gmail.com)

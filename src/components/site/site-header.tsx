@@ -25,6 +25,7 @@ const segments = [
   { name: 'Atlas', href: '/atlas', desc: 'Books Solutions' },
   { name: 'Live', href: '/live', desc: 'Live Classes' },
   { name: 'Concepts', href: '/concepts', desc: 'Browse all concepts' },
+  { name: 'Graph', href: '/knowledge-graph', desc: 'Concept map' },
 ]
 
 export function SiteHeader() {

@@ -862,3 +862,58 @@ Stage Summary:
 - Group chat integrated (uses existing unified ChatRoom in live_class mode)
 - All 14 sessions complete!
 - GitHub: pushed to github.com/dk6375/niodemy (careeralertonline@gmail.com)
+
+---
+Task ID: 15
+Agent: Development Agent (Z.ai Code)
+Task: Session 15 — Next-Gen Features (Spaced Repetition, Exam Readiness, Daily Plan, Cross-Exam Intelligence).
+
+Work Log:
+- 4 next-gen learning engines built (src/lib/learning/):
+  1. spaced-repetition.ts: SM-2 algorithm adapted
+     - calculateNextReview(mastery, attemptsCount, wasCorrect): returns nextReviewDate, intervalDays, easeFactor, message
+     - isDueForReview(nextReviewDate): checks if concept needs review today
+     - getReviewUrgency(nextReviewDate): 'overdue' | 'due' | 'soon' | 'future' | 'none'
+     - Interval logic: first review 1 day, second 3 days, then exponential based on mastery
+     - Wrong answer → review sooner (50% reduction)
+  
+  2. exam-readiness.ts: Exam Readiness Score
+     - computeExamReadiness(userId, examId): fetches exam concepts + progress + cycle date
+     - Formula: readiness = (masteryScore × 0.5) + (timeScore × 0.2) + (practiceScore × 0.3)
+     - masteryScore: avg mastery of exam concepts
+     - timeScore: based on days left (urgent < 7d = 20-70%, 7-30d = 80%, 30-90d = 70%, 90-180d = 60%)
+     - practiceScore: attempt coverage (5 per concept = 100%) × 0.5 + accuracy × 0.5
+     - Status: not-started / early / on-track / needs-focus / urgent / ready
+     - Returns message per exam
+  
+  3. daily-plan.ts: Personalized Daily Plan
+     - generateDailyPlan(userId, availableMinutes=60): generates revision + new learning + practice items
+     - Revision: concepts due for review (next_review_date <= today) or needs_revision status
+     - New Learning: from learning_paths (combined course) or exam syllabus not yet started
+     - Practice: concepts with mastery < 70% and > 0%
+     - Time allocation: 30% revision (3 min/item), 40% new (10 min/item), 30% practice (5 min/item)
+     - Returns: revision[], newLearning[], practice[], totalItems, estimatedMinutes, summary
+  
+  4. cross-exam-intelligence.ts: Cross-Exam Intelligence
+     - getCrossExamInsights(userId): finds concepts mastered for one exam, also needed for another
+     - "You mastered Fundamental Rights for SSC — also needed for UPSC at L4. You're 50% there!"
+     - Deduplicates and returns top 5 insights
+     - Shows depth difference (L2 → L4) and mastery %
+
+- /my dashboard updated with 3 new sections:
+  1. Today's Plan: revision/new-learning/practice items with time estimate + clickable concept links
+  2. Exam Readiness: per-exam cards with readiness %, progress bar, mastered/accuracy/days left stats, status badge
+  3. Cross-Exam Intelligence: insight cards showing mastered concepts transferable to other exams
+
+- Lint: 0 errors
+- Server: all routes 200, /my (307 redirect to login — correct for unauthenticated)
+
+Stage Summary:
+- 4 next-gen learning engines built:
+  - Spaced Repetition (SM-2): smart review scheduling based on forgetting curve
+  - Exam Readiness Score: multi-factor readiness calculation (mastery + time + practice)
+  - Daily Plan: AI-curated daily plan (learn new + revise + practice, time-allocated)
+  - Cross-Exam Intelligence: "don't teach me twice" insights across exams
+- /my dashboard now shows all 4 features (when user has progress + enrollments)
+- These are THE differentiator features — no Indian edtech platform has these
+- GitHub: pushed to github.com/dk6375/niodemy (careeralertonline@gmail.com)

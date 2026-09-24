@@ -798,3 +798,34 @@ Stage Summary:
 - Module types: theory, practical, workshop, safety, project (with distinct icons/colors)
 - Career opportunities shown per trade
 - GitHub: pushed to github.com/dk6375/niodemy (careeralertonline@gmail.com)
+
+---
+Task ID: 13
+Agent: Development Agent (Z.ai Code)
+Task: Session 13 — Skills segment (W3Schools-style tutorials).
+
+Work Log:
+- Database migration 015_skills.sql:
+  - skill_tracks (slug, name, icon, level, total_modules, estimated_hours, tags[], seo_json)
+  - skill_modules (track_id, module_number, title, body_md, is_interactive, example_code, estimated_minutes)
+  - RLS: public read
+- Seed data (010_skills.sql):
+  - 3 tracks: Python Programming (8 modules, 20h), Excel Mastery (6 modules, 15h), Digital Marketing (5 modules, 12h)
+  - 6 tutorial modules: Python (Intro, Variables, Control Flow, Functions), Excel (Basics, Formulas & Functions)
+  - Each module with full Markdown body (code blocks, tables, "Try it yourself" examples)
+  - is_interactive flag for hands-on modules
+- Skills query helpers (src/lib/queries/skills.ts)
+- Pages built:
+  - /skills: track list with icons, level badges, module/hours count
+  - /skills/track/[slug]: module list with interactive badges
+  - /skills/learn/[slug]: full tutorial page with Markdown rendering, module sidebar (navigation), prev/next buttons
+- End-to-end tested: all 3 routes 200
+- Lint: 0 errors
+
+Stage Summary:
+- Skills segment live — W3Schools-style tutorials
+- 3 tracks, 6 modules with Markdown tutorials + code examples
+- "Try it yourself" interactive examples
+- Free browsing (no login required)
+- Module navigation: prev/next + sidebar list
+- GitHub: pushed to github.com/dk6375/niodemy (careeralertonline@gmail.com)

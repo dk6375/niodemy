@@ -546,3 +546,61 @@ Stage Summary:
 - Lead gen: "Sign Up Free" + "View Courses" CTAs on book/chapter pages
 - GitHub: pushed to github.com/dk6375/niodemy (careeralertonline@gmail.com)
 - Next session: Session 9 — GK & Current Affairs (content-first, exam-centric personalization)
+
+---
+Task ID: 9
+Agent: Development Agent (Z.ai Code)
+Task: Session 9 — GK & Current Affairs (content-first, exam-centric).
+
+Work Log:
+- Database migration 012_gk.sql:
+  - current_events (slug, title, body_md, summary, category, event_date, source_name, gk_relevance, seo_json)
+  - event_concepts (event_id, concept_id) — link to knowledge graph
+  - event_exams (event_id, exam_id, relevance: low/medium/high) — exam-centric personalization
+  - RLS: public read published events
+- Seed data (006_gk_events.sql):
+  - 6 current events: G20 Summit 2025, Chandrayaan-4, One Nation One Election, Nobel Prize 2025, PM Surya Ghar, India 4th Largest Economy
+  - Categories: international, science, polity, awards, schemes, economy
+  - Each event with full Markdown body (tables, code blocks, bold, facts for exams)
+  - 17 event_exams mappings (same events, different relevance per exam):
+    - RRB Group D: 6 events (2 high, 4 medium)
+    - SSC GD: 6 events (all high)
+    - MP Police: 5 events (2 high, 2 medium, 1 low)
+  - 3 event_concepts mappings (One Nation → Fundamental Rights + Parliament; Chandrayaan-4 → Newton's Laws)
+- GK query helpers (src/lib/queries/gk.ts):
+  - getCurrentEvents(category?), getEventBySlug, getEventsForExam, getCategoriesWithCounts, getEventConcepts, getEventExams
+  - Fixed: client-side sort by event_date (Supabase JS can't order on joined table)
+- Pages built:
+  - /gk (home): content-first daily feed with category filter, 6 articles, exam-centric CTA (RRB/SSC/MP Police GK buttons)
+  - /gk/[category]: category page with articles list
+  - /gk/article/[slug]: article detail with:
+    - Breadcrumb (GK → Category → Article)
+    - JSON-LD (NewsArticle + BreadcrumbList)
+    - Markdown-rendered body (tables, code blocks, bold)
+    - Source link
+    - Related Concepts (knowledge graph links)
+    - Exam Relevance badges (high/medium/low per exam)
+    - Practice This Topic sidebar (QNA, AI Tutor)
+  - /gk/exam/[slug]: exam-centric GK with:
+    - Relevance breakdown (high/medium/low counts)
+    - Practice on Demand card (MCQs, QNA, AI Tutor buttons)
+    - Events grouped by category with relevance badges
+- End-to-end testing (Agent Browser):
+  - /gk: 6 articles shown with category filter (All 6, International 1, Science 1, Polity 1, Awards 1, Schemes 1, Economy 1)
+  - /gk/article/chandrayaan-4-mission-approved: full article with Mission Overview, Architecture, Key Features (3 subsections), Significance, Facts for Exams, Related Concepts (Newton's Laws), Exam Relevance (RRB high, SSC high, MP high), Practice sidebar
+  - /gk/exam/rrb-group-d: 6 events grouped by category (Polity 1, International 1, Awards 1, Economy 1, Science 1, Schemes 1), each with relevance badge (high/medium), Practice on Demand section
+  - VLM verified: "Content-first article layout, relevance-based filtering, exam-centric CTAs with Practice on Demand and AI Tutors"
+- Lint: 0 errors
+
+Stage Summary:
+- GK segment fully built — content-first, exam-centric
+- 6 current events live with full Markdown articles
+- Exam-centric personalization working: same events, different relevance per exam
+  - RRB Group D: 6 events (2 high, 4 medium)
+  - SSC GD: 6 events (all high — more demanding)
+  - MP Police: 5 events (2 high, 2 medium, 1 low)
+- Knowledge graph integration: events linked to concepts (clicking concept → /concept/[slug])
+- Practice access on demand: MCQs / QNA / AI Tutor (not forced — read first, practice when ready)
+- SEO: JSON-LD (NewsArticle + BreadcrumbList), sitemap integration
+- GitHub: pushed to github.com/dk6375/niodemy (careeralertonline@gmail.com)
+- Next session: Session 10 — Cross-segment integration + unified search + polish

@@ -51,9 +51,10 @@ export default async function TeacherLayout({
   const navItems = [
     { name: 'Dashboard', href: '/teacher', icon: LayoutDashboard },
     { name: 'Doubt Queue', href: '/teacher/doubts', icon: MessageSquare },
+    { name: 'QNA Queue', href: '/teacher/qna-queue', icon: MessageSquare },
     { name: 'Live Classes', href: '/teacher/live', icon: Video },
-    { name: 'QNA', href: '/teacher/qna', icon: MessageSquare },
     { name: 'My Students', href: '/teacher/students', icon: Users },
+    { name: 'My Content', href: '/teacher/content', icon: BookOpen },
     { name: 'My Schedule', href: '/teacher/schedule', icon: Calendar },
     { name: 'My Profile', href: '/teacher/profile', icon: User },
   ]

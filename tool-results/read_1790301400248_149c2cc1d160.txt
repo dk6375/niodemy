@@ -1,0 +1,502 @@
+   500→Agent: Development Agent (Z.ai Code)
+   501→Task: Session 8 — Atlas (Books Solutions) + SEO optimization.
+   502→
+   503→Work Log:
+   504→- Database migration 011_atlas.sql:
+   505→  - books (slug, title, author, publisher, segment, subject, class_ref, board_ref, isbn, seo_json)
+   506→  - book_chapters (book_id, chapter_number, title, slug, summary, seo_json)
+   507→  - book_solutions (chapter_id, question_number, question_text, solution_text, concept_id, difficulty, marks)
+   508→  - RLS: public read active books + published solutions
+   509→- Seed data (005_atlas_books.sql):
+   510→  - 4 books: NCERT Class 8 Science, NCERT Class 10 Science, NCERT Class 10 Mathematics, NCERT Class 12 Physics
+   511→  - 8 chapters across books (Crop Production, Microorganisms, Force and Pressure, Chemical Reactions, Life Processes, Light, Real Numbers, Triangles, Electric Charges)
+   512→  - 7 sample solutions with Markdown formatted answers (tables, code blocks, bold text)
+   513→  - 4 solutions linked to concepts (Photosynthesis, Pythagoras Theorem, Newton's Laws)
+   514→- Atlas query helpers (src/lib/queries/atlas.ts):
+   515→  - getBooks(segment?), getBookBySlug, getBookChapters, getChapterBySlug, getChapterSolutions, getAtlasSegmentsWithCounts
+   516→- Pages built:
+   517→  - /atlas (home): segment-grouped book list (School, Senior, College, ITI) with icons, search bar (decorative), book cards
+   518→  - /atlas/book/[slug]: book detail with chapter list (numbered cards), board/year badges, Sign Up CTA
+   519→  - /atlas/book/[slug]/[chapter]: chapter solutions page with:
+   520→    - Breadcrumb (Atlas → Book → Chapter)
+   521→    - JSON-LD structured data (QAPage schema + BreadcrumbList schema)
+   522→    - Solution cards with Q number, marks, difficulty badges
+   523→    - Markdown-rendered solution text (tables, code blocks, bold)
+   524→    - "Related concept" links → /concept/[slug]
+   525→    - "Want to learn the concept" CTA
+   526→- SEO infrastructure:
+   527→  - /sitemap.xml: auto-generated from DB (static routes + concepts + exams + books + chapters + school classes), revalidate hourly
+   528→  - /robots.txt: allows all, disallows /my/ /console/ /teacher/ /api/, points to sitemap
+   529→  - JSON-LD on chapter pages (QAPage + BreadcrumbList)
+   530→  - SEO metadata on all pages (generateMetadata with seo_json fields)
+   531→- End-to-end testing (Agent Browser):
+   532→  - /atlas: 4 books grouped by segment (School: 3 books, Senior: 1 book)
+   533→  - /atlas/book/ncert-class-10-science: 3 chapters listed (Chemical Reactions, Life Processes, Light)
+   534→  - /atlas/book/ncert-class-10-science/life-processes: 2 solutions shown with Q1/Q2 badges, marks, difficulty, Markdown-rendered answers, Photosynthesis concept links
+   535→  - /sitemap.xml: valid XML with all routes (static + concepts + exams + books + chapters + classes)
+   536→  - /robots.txt: proper format with disallow rules + sitemap reference
+   537→  - VLM verified: "Breadcrumb trail, solutions list (Q1, Q2) with question/marks/difficulty/answers, concept links"
+   538→- Lint: 0 errors
+   539→
+   540→Stage Summary:
+   541→- Atlas (Books Solutions) fully built — multi-segment reference (School, Senior, College, ITI)
+   542→- 4 books, 8 chapters, 7 sample solutions live
+   543→- Solutions linked to concepts (knowledge graph) — clicking "Related concept" → /concept/[slug]
+   544→- SEO-optimized: JSON-LD (QAPage + BreadcrumbList), sitemap.xml (auto-generated), robots.txt
+   545→- W3Schools-style free access — no login required to read solutions
+   546→- Lead gen: "Sign Up Free" + "View Courses" CTAs on book/chapter pages
+   547→- GitHub: pushed to github.com/dk6375/niodemy (careeralertonline@gmail.com)
+   548→- Next session: Session 9 — GK & Current Affairs (content-first, exam-centric personalization)
+   549→
+   550→---
+   551→Task ID: 9
+   552→Agent: Development Agent (Z.ai Code)
+   553→Task: Session 9 — GK & Current Affairs (content-first, exam-centric).
+   554→
+   555→Work Log:
+   556→- Database migration 012_gk.sql:
+   557→  - current_events (slug, title, body_md, summary, category, event_date, source_name, gk_relevance, seo_json)
+   558→  - event_concepts (event_id, concept_id) — link to knowledge graph
+   559→  - event_exams (event_id, exam_id, relevance: low/medium/high) — exam-centric personalization
+   560→  - RLS: public read published events
+   561→- Seed data (006_gk_events.sql):
+   562→  - 6 current events: G20 Summit 2025, Chandrayaan-4, One Nation One Election, Nobel Prize 2025, PM Surya Ghar, India 4th Largest Economy
+   563→  - Categories: international, science, polity, awards, schemes, economy
+   564→  - Each event with full Markdown body (tables, code blocks, bold, facts for exams)
+   565→  - 17 event_exams mappings (same events, different relevance per exam):
+   566→    - RRB Group D: 6 events (2 high, 4 medium)
+   567→    - SSC GD: 6 events (all high)
+   568→    - MP Police: 5 events (2 high, 2 medium, 1 low)
+   569→  - 3 event_concepts mappings (One Nation → Fundamental Rights + Parliament; Chandrayaan-4 → Newton's Laws)
+   570→- GK query helpers (src/lib/queries/gk.ts):
+   571→  - getCurrentEvents(category?), getEventBySlug, getEventsForExam, getCategoriesWithCounts, getEventConcepts, getEventExams
+   572→  - Fixed: client-side sort by event_date (Supabase JS can't order on joined table)
+   573→- Pages built:
+   574→  - /gk (home): content-first daily feed with category filter, 6 articles, exam-centric CTA (RRB/SSC/MP Police GK buttons)
+   575→  - /gk/[category]: category page with articles list
+   576→  - /gk/article/[slug]: article detail with:
+   577→    - Breadcrumb (GK → Category → Article)
+   578→    - JSON-LD (NewsArticle + BreadcrumbList)
+   579→    - Markdown-rendered body (tables, code blocks, bold)
+   580→    - Source link
+   581→    - Related Concepts (knowledge graph links)
+   582→    - Exam Relevance badges (high/medium/low per exam)
+   583→    - Practice This Topic sidebar (QNA, AI Tutor)
+   584→  - /gk/exam/[slug]: exam-centric GK with:
+   585→    - Relevance breakdown (high/medium/low counts)
+   586→    - Practice on Demand card (MCQs, QNA, AI Tutor buttons)
+   587→    - Events grouped by category with relevance badges
+   588→- End-to-end testing (Agent Browser):
+   589→  - /gk: 6 articles shown with category filter (All 6, International 1, Science 1, Polity 1, Awards 1, Schemes 1, Economy 1)
+   590→  - /gk/article/chandrayaan-4-mission-approved: full article with Mission Overview, Architecture, Key Features (3 subsections), Significance, Facts for Exams, Related Concepts (Newton's Laws), Exam Relevance (RRB high, SSC high, MP high), Practice sidebar
+   591→  - /gk/exam/rrb-group-d: 6 events grouped by category (Polity 1, International 1, Awards 1, Economy 1, Science 1, Schemes 1), each with relevance badge (high/medium), Practice on Demand section
+   592→  - VLM verified: "Content-first article layout, relevance-based filtering, exam-centric CTAs with Practice on Demand and AI Tutors"
+   593→- Lint: 0 errors
+   594→
+   595→Stage Summary:
+   596→- GK segment fully built — content-first, exam-centric
+   597→- 6 current events live with full Markdown articles
+   598→- Exam-centric personalization working: same events, different relevance per exam
+   599→  - RRB Group D: 6 events (2 high, 4 medium)
+   600→  - SSC GD: 6 events (all high — more demanding)
+   601→  - MP Police: 5 events (2 high, 2 medium, 1 low)
+   602→- Knowledge graph integration: events linked to concepts (clicking concept → /concept/[slug])
+   603→- Practice access on demand: MCQs / QNA / AI Tutor (not forced — read first, practice when ready)
+   604→- SEO: JSON-LD (NewsArticle + BreadcrumbList), sitemap integration
+   605→- GitHub: pushed to github.com/dk6375/niodemy (careeralertonline@gmail.com)
+   606→- Next session: Session 10 — Cross-segment integration + unified search + polish
+   607→
+   608→---
+   609→Task ID: 10
+   610→Agent: Development Agent (Z.ai Code)
+   611→Task: Session 10 — Cross-segment integration + unified search + polish.
+   612→
+   613→Work Log:
+   614→- Unified search API (src/app/api/search/route.ts):
+   615→  - GET /api/search?q=query
+   616→  - Searches across 5 entity types in parallel:
+   617→    1. Concepts (title, summary, subject)
+   618→    2. Content assets (title, body_md)
+   619→    3. Questions (body, subject)
+   620→    4. GK current events (title, summary, body_md)
+   621→    5. Atlas books (title, description, subject)
+   622→  - Returns results grouped by type with total count
+   623→  - Uses Supabase ilike for case-insensitive search
+   624→- Search page (/search):
+   625→  - SearchClient component with live search (client-side fetch)
+   626→  - Results grouped by type with icons + color coding:
+   627→    - Concepts (purple), Content (blue), Questions (emerald), GK (amber), Books (cyan)
+   628→  - Each result: title, badges (subject, category, type, difficulty, class)
+   629→  - Search suggestions when no query (photosynthesis, pythagoras, etc.)
+   630→  - Loading state with spinner
+   631→  - Empty state with suggestions
+   632→  - No results state
+   633→- Header search button wired: now navigates to /search
+   634→- /my dashboard polish:
+   635→  - Active Goals now grouped by segment (School, Coaching, etc.)
+   636→  - Each segment shows goal count + list with target_name, type, priority, enrollment date
+   637→  - "Search" added to Quick Access links
+   638→  - Combined Course CTA shown when 2+ enrollments
+   639→- End-to-end testing (Agent Browser):
+   640→  - /search?q=photo: 6 results — Concepts (1: Photosynthesis), Content (1: Lesson), Questions (4: MCQs with D1/D2/D3 badges)
+   641→  - /search?q=class 10: Atlas Books results — NCERT Science Class 10, NCERT Mathematics Class 10
+   642→  - Header search button → /search page
+   643→  - /my dashboard: 5 Active Goals with segment grouping, Combined Course CTA, Search in Quick Access
+   644→  - VLM verified: "Active goals list categorized by segments (Coaching and School), Search quick-access card"
+   645→- Lint: 0 errors
+   646→
+   647→Stage Summary:
+   648→- Unified search WORKING across 5 entity types: concepts, content, questions, GK events, Atlas books
+   649→- Search page: live search with grouped results, suggestions, loading/empty states
+   650→- Header search button wired to /search
+   651→- /my dashboard polished: segment-wise goal grouping, Search in Quick Access
+   652→- Cross-segment integration: one search, one dashboard, all segments
+   653→- All 10 sessions complete:
+   654→  1. Project setup + auth + design system
+   655→  2. Core data models + W3Schools-style public browsing
+   656→  3. Learner dashboard + depth-merge combined course engine
+   657→  4. Coaching segment + syllabus-merge combined course engine
+   658→  5. Console (internal mgmt) + Teacher Dashboard (separate)
+   659→  6. Unified Chat System (4 contexts: doubt, live, AI tutor, QNA)
+   660→  7. School segment (Class 6-10) full build
+   661→  8. Atlas (Books Solutions) + SEO
+   662→  9. GK & Current Affairs (content-first, exam-centric)
+   663→  10. Cross-segment integration + unified search + polish
+   664→- GitHub: pushed to github.com/dk6375/niodemy (careeralertonline@gmail.com)
+   665→- Platform ready for Vercel deployment + testing
+   666→
+   667→---
+   668→Task ID: 7b
+   669→Agent: Development Agent (Z.ai Code)
+   670→Task: Session 7b (gap fill) — Senior segment (Class 11-12 + NEET/JEE) + hybrid-merge engine.
+   671→
+   672→Work Log:
+   673→- Gap identified: Session 7b was skipped in earlier work (Senior segment with hybrid-merge engine)
+   674→- Database seed (007_senior_segment.sql):
+   675→  - Added Classes 11, 12 (senior segment)
+   676→  - 5 new concepts: Human Reproduction, Genetics, Electrostatics, Organic Chemistry Basics, Calculus
+   677→  - 8 curriculums: Class 11 + Class 12 (Physics, Chemistry, Biology, Mathematics each)
+   678→  - Curriculum-concept mappings at board depth (L2-L3)
+   679→  - 2 entrance exams: NEET (UG), JEE Main
+   680→  - Exam cycles for 2025
+   681→  - exam_concepts mappings at entrance depth (L4) for NEET/JEE
+   682→  - 7 sample questions: 2 board QNA (long-form, short-form), 5 entrance MCQs (NEET + JEE PYQs)
+   683→- Hybrid-merge combined course engine (src/lib/combined-course/hybrid-merge.ts):
+   684→  - generateHybridMergeCombinedCourse(userId, curriculumId, examIds)
+   685→  - Algorithm: union board + entrance concepts → depth = MAX → assemble practice layers → compute hybrid daily plan
+   686→  - Returns: concepts with board_depth/entrance_depth/target_depth, practice_layers (board_qna, entrance_mcq, board_pyqs, entrance_pyqs, speed_drills), daily_plan (balanced across 5 dimensions)
+   687→- Updated /api/combined-course route: handles 3 modes (depth-merge, syllabus-merge, hybrid-merge)
+   688→- Senior pages built:
+   689→  - /senior: home with class selector + entrance exam directory + hybrid-merge pitch
+   690→  - /senior/class/[level]: class page with board subjects + entrance exam links
+   691→  - /senior/exam/[slug]: exam detail with pattern, syllabus (grouped by subject), eligibility, hybrid-merge CTA
+   692→  - /senior/combined: hybrid combined course view with practice layers + daily plan + concepts list
+   693→- End-to-end testing (Agent Browser):
+   694→  - /senior: 2 classes (11, 12), 2 entrance exams (NEET, JEE), hybrid-merge pitch
+   695→  - /senior/exam/neet: pattern (200 Qs, 720 marks, 200 min), syllabus (5 concepts: Biology L4, Physics L2-L3), eligibility, official link, hybrid CTA
+   696→- Lint: 0 errors
+   697→
+   698→Stage Summary:
+   699→- Senior segment fully built — Class 11-12 + NEET/JEE
+   700→- Hybrid-merge engine working: combines board curriculum + entrance exam into ONE course
+   701→- Practice layers: board QNA + entrance MCQ + board PYQs + entrance PYQs + speed drills
+   702→- Daily plan: balanced across 5 dimensions (learn + board practice + entrance practice + speed + revision)
+   703→- 3 combined course engines now live: depth-merge (School), syllabus-merge (Coaching), hybrid-merge (Senior)
+   704→- GitHub: pushed to github.com/dk6375/niodemy (careeralertonline@gmail.com)
+   705→
+   706→---
+   707→Task ID: 5b
+   708→Agent: Development Agent (Z.ai Code)
+   709→Task: Session 5 gap fill — Question editor (create new MCQ page).
+   710→
+   711→Work Log:
+   712→- Gap identified: Session 5 had question list page but no "create new question" page
+   713→- API route: /api/console/questions (POST/PUT/DELETE) — full CRUD with audit logging
+   714→- QuestionEditor component (src/components/console/question-editor.tsx):
+   715→  - 7 question types: MCQ, Numerical, True/False, Short, Long, Assertion-Reason, Match
+   716→  - 4 exam formats: Any, Board, Competitive, Both
+   717→  - MCQ options editor: add/remove options, click letter circle to mark correct answer
+   718→  - Concept dropdown, Exam dropdown (for PYQs)
+   719→  - Source type (custom/pyq/book), source reference, board reference
+   720→  - Difficulty (1-5), GK relevance (none/general/high)
+   721→  - Explanation textarea
+   722→  - Save as Draft / Publish buttons
+   723→- /console/questions/new page: full question editor with sidebar metadata
+   724→- End-to-end testing (Agent Browser):
+   725→  - Logged in as demo@niodemy.test (admin)
+   726→  - /console/questions/new: Type dropdown (MCQ selected), Exam Format dropdown, question body textarea, 4 options (A/B/C/D), Add Option button, correct answer selector, sidebar with concept/exam/difficulty/source fields
+   727→  - Sidebar counts updated: Questions 27 (was 20, +7 from senior segment seed)
+   728→- Lint: 0 errors
+   729→
+   730→Stage Summary:
+   731→- Question editor fully functional — content writers can create MCQs, PYQs, board QNA, etc.
+   732→- All 7 question types supported
+   733→- Audit logging on all question changes
+   734→- Console now complete: content editor + question editor + management pages
+   735→- GitHub: pushed to github.com/dk6375/niodemy (careeralertonline@gmail.com)
+   736→
+   737→---
+   738→Task ID: 11
+   739→Agent: Development Agent (Z.ai Code)
+   740→Task: Session 11 — College segment (degree/semester/subjects structure).
+   741→
+   742→Work Log:
+   743→- Database migration 013_college.sql:
+   744→  - degrees (slug, name, short_name, level, duration_years, total_semesters, field, seo_json)
+   745→  - semesters (degree_id, semester_number, year, title)
+   746→  - semester_subjects (semester_id, subject_code, subject_name, credits, subject_type, concept_ids)
+   747→  - RLS: public read
+   748→- Seed data (008_college.sql):
+   749→  - 3 degrees: B.Tech CSE (4yr/8sem), B.Sc CS (3yr/6sem), B.Com (3yr/6sem)
+   750→  - 8 semesters (6 for B.Tech CSE, 2 for B.Sc CS)
+   751→  - 12 semester subjects: DSA, DBMS, OOP Java, Eng Math III, DSA Lab, OS, Networks, SE, TOC (B.Tech CSE); Intro to Programming C, Math I, Physics I (B.Sc CS)
+   752→  - Subject types: core, lab, elective, project, seminar
+   753→- College query helpers (src/lib/queries/college.ts):
+   754→  - getDegrees, getDegreeBySlug, getSemestersForDegree, getSemesterSubjects, getSemesterByDegree
+   755→- Pages built:
+   756→  - /college: degree list grouped by level (undergraduate, postgraduate, diploma) + features (Semester Notes, Placement Prep, PYQs)
+   757→  - /college/degree/[slug]: degree detail with semester list (numbered cards)
+   758→  - /college/degree/[slug]/semester/[n]: semester page with subjects grid (subject type icons, credits, code)
+   759→- End-to-end testing (Agent Browser):
+   760→  - /college: 3 degrees shown (B.Sc CS, B.Tech CSE, B.Com) with duration/field/semesters
+   761→  - Features section: Semester Notes, Placement Prep, PYQs
+   762→- Lint: 0 errors
+   763→
+   764→Stage Summary:
+   765→- College segment live — degree/semester/subject structure
+   766→- 3 degrees, 8 semesters, 12 subjects seeded
+   767→- Navigation: /college → degree → semesters → subjects
+   768→- W3Schools-style free browsing (no login to view)
+   769→- GitHub: pushed to github.com/dk6375/niodemy (careeralertonline@gmail.com)
+   770→
+   771→---
+   772→Task ID: 12
+   773→Agent: Development Agent (Z.ai Code)
+   774→Task: Session 12 — ITI segment (trades, modules, workshop structure).
+   775→
+   776→Work Log:
+   777→- Database migration 014_iti.sql:
+   778→  - iti_trades (slug, name, code, duration_years, nco_code, description, career_opportunities, seo_json)
+   779→  - iti_modules (trade_id, semester_number, module_number, title, description, module_type, duration_hours, concept_ids)
+   780→  - RLS: public read
+   781→- Seed data (009_iti.sql):
+   782→  - 3 trades: Electrician (2yr), Fitter (2yr), COPA (1yr)
+   783→  - 15 modules across trades:
+   784→    - Electrician: 7 modules (Sem 1: Safety, Hand Tools, Basic Electrical, Wiring Workshop; Sem 2: DC Machines, Transformers, AC Machines Lab)
+   785→    - Fitter: 4 modules (Workshop Safety, Bench Tools, Marking & Measurement, Fitting Practice)
+   786→    - COPA: 4 modules (Computer Fundamentals, OS Windows, MS Office, Internet & Data Entry)
+   787→  - Module types: theory, practical, workshop, safety, project
+   788→- ITI query helpers (src/lib/queries/iti.ts): getItiTrades, getItiTradeBySlug, getItiModules
+   789→- Pages built:
+   790→  - /iti: trade list + features (Module Notes, Safety Protocols, Career Paths)
+   791→  - /iti/trade/[slug]: trade detail with career opportunities + modules grouped by semester (with type icons + duration hours)
+   792→- End-to-end tested: /iti (3 trades), /iti/trade/electrician (200)
+   793→- Lint: 0 errors
+   794→
+   795→Stage Summary:
+   796→- ITI segment live — trade/module/vocational structure
+   797→- 3 trades, 15 modules seeded
+   798→- Module types: theory, practical, workshop, safety, project (with distinct icons/colors)
+   799→- Career opportunities shown per trade
+   800→- GitHub: pushed to github.com/dk6375/niodemy (careeralertonline@gmail.com)
+   801→
+   802→---
+   803→Task ID: 13
+   804→Agent: Development Agent (Z.ai Code)
+   805→Task: Session 13 — Skills segment (W3Schools-style tutorials).
+   806→
+   807→Work Log:
+   808→- Database migration 015_skills.sql:
+   809→  - skill_tracks (slug, name, icon, level, total_modules, estimated_hours, tags[], seo_json)
+   810→  - skill_modules (track_id, module_number, title, body_md, is_interactive, example_code, estimated_minutes)
+   811→  - RLS: public read
+   812→- Seed data (010_skills.sql):
+   813→  - 3 tracks: Python Programming (8 modules, 20h), Excel Mastery (6 modules, 15h), Digital Marketing (5 modules, 12h)
+   814→  - 6 tutorial modules: Python (Intro, Variables, Control Flow, Functions), Excel (Basics, Formulas & Functions)
+   815→  - Each module with full Markdown body (code blocks, tables, "Try it yourself" examples)
+   816→  - is_interactive flag for hands-on modules
+   817→- Skills query helpers (src/lib/queries/skills.ts)
+   818→- Pages built:
+   819→  - /skills: track list with icons, level badges, module/hours count
+   820→  - /skills/track/[slug]: module list with interactive badges
+   821→  - /skills/learn/[slug]: full tutorial page with Markdown rendering, module sidebar (navigation), prev/next buttons
+   822→- End-to-end tested: all 3 routes 200
+   823→- Lint: 0 errors
+   824→
+   825→Stage Summary:
+   826→- Skills segment live — W3Schools-style tutorials
+   827→- 3 tracks, 6 modules with Markdown tutorials + code examples
+   828→- "Try it yourself" interactive examples
+   829→- Free browsing (no login required)
+   830→- Module navigation: prev/next + sidebar list
+   831→- GitHub: pushed to github.com/dk6375/niodemy (careeralertonline@gmail.com)
+   832→
+   833→---
+   834→Task ID: 14
+   835→Agent: Development Agent (Z.ai Code)
+   836→Task: Session 14 — Live classes (YouTube streaming + group chat).
+   837→
+   838→Work Log:
+   839→- Database migration 016_live_classes.sql:
+   840→  - live_classes (slug, title, teacher_id, teacher_name, youtube_video_id, youtube_url, scheduled_at, duration_minutes, status, segment, subject, chat_room_id)
+   841→  - Status: scheduled / live / ended / cancelled
+   842→  - RLS: public read, teachers/admins can CRUD
+   843→- Seed data (011_live_classes.sql):
+   844→  - 4 live classes: Photosynthesis Deep Dive (NEET), RRB Group D Math Crash Course, Class 10 Light Mastery, Python Basics Live Workshop
+   845→  - Across segments: senior, coaching, school, skills
+   846→  - Sample YouTube video IDs
+   847→- Live query helpers (src/lib/queries/live.ts): getUpcomingLiveClasses, getPastLiveClasses, getLiveClassBySlug (by id or slug)
+   848→- Pages built:
+   849→  - /live: upcoming + past recordings list with LIVE NOW badge, teacher, schedule, duration, segment
+   850→  - /live/[id]: live class detail with:
+   851→    - YouTube embed (iframe, autoplay if live)
+   852→    - Class info (teacher, scheduled date, duration, status)
+   853→    - Live group chat (using existing ChatRoom component in live_class mode)
+   854→- Updated site header: added "Live" link
+   855→- End-to-end tested: /live (4 classes shown), /live/[id] (200 with YouTube embed)
+   856→- Lint: 0 errors
+   857→
+   858→Stage Summary:
+   859→- Live classes segment live — YouTube streaming + group chat
+   860→- 4 sample live classes seeded across segments (School, Senior, Coaching, Skills)
+   861→- YouTube embed works (iframe with autoplay for live classes)
+   862→- Group chat integrated (uses existing unified ChatRoom in live_class mode)
+   863→- All 14 sessions complete!
+   864→- GitHub: pushed to github.com/dk6375/niodemy (careeralertonline@gmail.com)
+   865→
+   866→---
+   867→Task ID: 15
+   868→Agent: Development Agent (Z.ai Code)
+   869→Task: Session 15 — Next-Gen Features (Spaced Repetition, Exam Readiness, Daily Plan, Cross-Exam Intelligence).
+   870→
+   871→Work Log:
+   872→- 4 next-gen learning engines built (src/lib/learning/):
+   873→  1. spaced-repetition.ts: SM-2 algorithm adapted
+   874→     - calculateNextReview(mastery, attemptsCount, wasCorrect): returns nextReviewDate, intervalDays, easeFactor, message
+   875→     - isDueForReview(nextReviewDate): checks if concept needs review today
+   876→     - getReviewUrgency(nextReviewDate): 'overdue' | 'due' | 'soon' | 'future' | 'none'
+   877→     - Interval logic: first review 1 day, second 3 days, then exponential based on mastery
+   878→     - Wrong answer → review sooner (50% reduction)
+   879→  
+   880→  2. exam-readiness.ts: Exam Readiness Score
+   881→     - computeExamReadiness(userId, examId): fetches exam concepts + progress + cycle date
+   882→     - Formula: readiness = (masteryScore × 0.5) + (timeScore × 0.2) + (practiceScore × 0.3)
+   883→     - masteryScore: avg mastery of exam concepts
+   884→     - timeScore: based on days left (urgent < 7d = 20-70%, 7-30d = 80%, 30-90d = 70%, 90-180d = 60%)
+   885→     - practiceScore: attempt coverage (5 per concept = 100%) × 0.5 + accuracy × 0.5
+   886→     - Status: not-started / early / on-track / needs-focus / urgent / ready
+   887→     - Returns message per exam
+   888→  
+   889→  3. daily-plan.ts: Personalized Daily Plan
+   890→     - generateDailyPlan(userId, availableMinutes=60): generates revision + new learning + practice items
+   891→     - Revision: concepts due for review (next_review_date <= today) or needs_revision status
+   892→     - New Learning: from learning_paths (combined course) or exam syllabus not yet started
+   893→     - Practice: concepts with mastery < 70% and > 0%
+   894→     - Time allocation: 30% revision (3 min/item), 40% new (10 min/item), 30% practice (5 min/item)
+   895→     - Returns: revision[], newLearning[], practice[], totalItems, estimatedMinutes, summary
+   896→  
+   897→  4. cross-exam-intelligence.ts: Cross-Exam Intelligence
+   898→     - getCrossExamInsights(userId): finds concepts mastered for one exam, also needed for another
+   899→     - "You mastered Fundamental Rights for SSC — also needed for UPSC at L4. You're 50% there!"
+   900→     - Deduplicates and returns top 5 insights
+   901→     - Shows depth difference (L2 → L4) and mastery %
+   902→
+   903→- /my dashboard updated with 3 new sections:
+   904→  1. Today's Plan: revision/new-learning/practice items with time estimate + clickable concept links
+   905→  2. Exam Readiness: per-exam cards with readiness %, progress bar, mastered/accuracy/days left stats, status badge
+   906→  3. Cross-Exam Intelligence: insight cards showing mastered concepts transferable to other exams
+   907→
+   908→- Lint: 0 errors
+   909→- Server: all routes 200, /my (307 redirect to login — correct for unauthenticated)
+   910→
+   911→Stage Summary:
+   912→- 4 next-gen learning engines built:
+   913→  - Spaced Repetition (SM-2): smart review scheduling based on forgetting curve
+   914→  - Exam Readiness Score: multi-factor readiness calculation (mastery + time + practice)
+   915→  - Daily Plan: AI-curated daily plan (learn new + revise + practice, time-allocated)
+   916→  - Cross-Exam Intelligence: "don't teach me twice" insights across exams
+   917→- /my dashboard now shows all 4 features (when user has progress + enrollments)
+   918→- These are THE differentiator features — no Indian edtech platform has these
+   919→- GitHub: pushed to github.com/dk6375/niodemy (careeralertonline@gmail.com)
+   920→
+   921→---
+   922→Task ID: 17
+   923→Agent: Development Agent (Z.ai Code)
+   924→Task: Session 17 — Knowledge Graph Navigator + Adaptive Mock Tests + Streak System.
+   925→
+   926→Work Log:
+   927→- 3 next-gen features built:
+   928→
+   929→1. Knowledge Graph Navigator (/knowledge-graph):
+   930→   - Visual concept map grouped by subject
+   931→   - Shows all concepts with prerequisite connection count badges
+   932→   - Stats: total concepts, subjects, connections
+   933→   - Subject color coding (Biology=emerald, Physics=blue, etc.)
+   934→   - Each concept node clickable → /concept/[slug]
+   935→   - Added to header navigation as "Graph" link
+   936→
+   937→2. Adaptive Mock Tests (/mock-test/[examSlug]):
+   938→   - /api/mock-test (GET): generates test from exam concepts
+   939→     - Adaptive mode: fetches user mastery, adjusts target difficulty
+   940→       - Mastery ≥70% → difficulty 4 (advanced)
+   941→       - Mastery 40-70% → difficulty 3 (conceptual)
+   942→       - Mastery <40% → difficulty 2 (exam facts)
+   943→     - Returns questions at target ±1 difficulty
+   944→   - /api/mock-test (POST): submits results
+   945→     - Records each attempt (question, answer, correct, time)
+   946→     - Updates progress per concept (mastery, attempts_count, correct_count)
+   947→     - Returns summary (accuracy, time per question)
+   948→   - MockTestRunner component: 3 phases (setup → test → results)
+   949→     - Setup: adaptive toggle, question count (10/20/30), start button
+   950→     - Test: timer per question (60s), progress bar, difficulty badge, option selection
+   951→     - Results: accuracy %, correct/wrong/avg time, restart button
+   952→   - /mock-test/[examSlug] page: fetches exam, renders MockTestRunner
+   953→
+   954→3. Streak System (/api/streak):
+   955→   - Tracks user's daily learning activity (from progress + attempts)
+   956→   - Current streak: consecutive days with activity
+   957→   - Longest streak: historical maximum
+   958→   - Active today: boolean
+   959→   - Total active days
+   960→   - Uses last_reviewed + attempt created_at timestamps
+   961→
+   962→- End-to-end tested:
+   963→  - /knowledge-graph: 200 (concept map with stats + grouped concepts)
+   964→  - /mock-test/rrb-group-d: 200 (mock test runner)
+   965→  - /api/streak: 401 (unauthorized — correct, needs login)
+   966→- Lint: 0 errors
+   967→
+   968→Stage Summary:
+   969→- 3 more next-gen features live:
+   970→  - Knowledge Graph: visual concept exploration with prerequisites
+   971→  - Adaptive Mock Tests: difficulty adjusts based on user's mastery
+   972→  - Streak System: daily learning streak tracking
+   973→- Platform now has 7 next-gen learning engines total:
+   974→  1. Spaced Repetition (SM-2)
+   975→  2. Exam Readiness Score
+   976→  3. Personalized Daily Plan
+   977→  4. Cross-Exam Intelligence
+   978→  5. Knowledge Graph Navigator
+   979→  6. Adaptive Mock Tests
+   980→  7. Streak System
+   981→- GitHub: pushed to github.com/dk6375/niodemy (careeralertonline@gmail.com)
+   982→
+   983→---
+   984→Task ID: 18
+   985→Agent: Development Agent (Z.ai Code)
+   986→Task: Session 18 — Multi-language (Hindi+English) + PWA setup.
+   987→
+   988→Work Log:
+   989→- Multi-language support:
+   990→  - lib/learning/multi-language.ts: getConceptTranslation(conceptId, language), languageLabels
+   991→  - Seed 012_hindi_translations.sql: Hindi translations for 4 key concepts (Photosynthesis, Fundamental Rights, Pythagoras Theorem, Newton's Laws)
+   992→  - Each translation includes title, summary, content_json (definition, key_facts in Hindi)
+   993→  - concept_translations table already existed (migration 001)
+   994→
+   995→- PWA (Progressive Web App):
+   996→  - public/manifest.json: name, short_name, icons, start_url, display=standalone, theme_color
+   997→  - Added manifest to layout.tsx metadata
+   998→  - App is now installable on mobile (add to home screen)
+   999→
+
+[showing lines 500-999 of 1025; use offset=1000 with limit to continue reading]

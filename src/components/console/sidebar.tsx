@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import {
   BookOpen, FileQuestion, GraduationCap, Users,
   BarChart3, Settings, ScrollText, Layers,
-  LayoutDashboard, ShieldCheck,
+  LayoutDashboard, ShieldCheck, Newspaper, Video,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
@@ -28,6 +28,10 @@ const navItems = [
   { name: 'Questions', href: '/console/questions', icon: FileQuestion, countKey: 'questions' as const },
   { name: 'Concepts', href: '/console/concepts', icon: Layers, countKey: 'concepts' as const },
   { name: 'Exams', href: '/console/exams', icon: GraduationCap, countKey: 'exams' as const },
+  { name: 'Curriculum', href: '/console/curriculum', showCount: false, icon: BookOpen },
+  { name: 'GK', href: '/console/gk', icon: Newspaper, showCount: false },
+  { name: 'Atlas', href: '/console/atlas', icon: BookOpen, showCount: false },
+  { name: 'Live Classes', href: '/console/live', icon: Video, showCount: false },
   { name: 'Teachers', href: '/console/teachers', icon: ShieldCheck, showCount: false },
   { name: 'Users', href: '/console/users', icon: Users, countKey: 'users' as const },
   { name: 'Analytics', href: '/console/analytics', icon: BarChart3, showCount: false },

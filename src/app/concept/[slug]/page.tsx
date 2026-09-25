@@ -66,8 +66,38 @@ export default async function ConceptPage({
   const components = concept.content_json?.components || []
   const depthLayers = concept.depth_layers || {}
 
+  // JSON-LD for SEO
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: concept.title,
+    description: concept.summary || `Learn ${concept.title} on Niodemy`,
+    author: { '@type': 'Organization', name: 'Niodemy' },
+    publisher: { '@type': 'Organization', name: 'Niodemy' },
+    about: { '@type': 'Thing', name: concept.subject },
+  }
+
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: '/' },
+      { '@type': 'ListItem', position: 2, name: concept.subject },
+      { '@type': 'ListItem', position: 3, name: concept.title },
+    ],
+  }
+
   return (
     <div className="container mx-auto px-4 py-6 sm:px-6 sm:py-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+      />
+
       {/* Breadcrumb */}
       <div className="mb-4 flex items-center gap-1 text-sm text-muted-foreground">
         <Link href="/" className="hover:text-foreground">Home</Link>
